@@ -17,7 +17,7 @@
     --line: rgba(200,150,150,0.09); --line-strong: rgba(200,150,150,0.22);
     --bone:#e9dfd0; --bone-dim:#a89e94; --muted:#8d8390;
     --blood:#c81d25; --blood-2:#7a1015; --ember:#e0703a;
-    --entity: #6b2fa8; --entity-2:#3a1a5c;
+    --entity: #5a0a10; --entity-2:#2a0508;
     --bronze:#a5673a; --prata:#adb4bb; --ouro:#d4af37;
     --shadow-md: 0 14px 40px -14px rgba(0,0,0,0.85), 0 2px 10px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.03);
   }
@@ -28,7 +28,7 @@
     min-height:100vh; position:relative; overflow-x:hidden;
     background:
       radial-gradient(900px 600px at 85% -10%, rgba(200,29,37,0.14), transparent 60%),
-      radial-gradient(800px 700px at -10% 20%, rgba(107,47,168,0.16), transparent 60%),
+      radial-gradient(800px 700px at -10% 20%, rgba(100,10,18,0.24), transparent 60%),
       radial-gradient(1000px 800px at 50% 115%, rgba(200,29,37,0.10), transparent 60%),
       linear-gradient(180deg, #0a080b 0%, #08070a 55%, #0b0810 100%);
     background-attachment:fixed;
@@ -55,7 +55,7 @@
     display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap;
     padding:24px 28px; background:
       radial-gradient(500px 200px at 92% -30%, rgba(200,29,37,0.16), transparent 60%),
-      radial-gradient(500px 220px at 0% 130%, rgba(107,47,168,0.18), transparent 60%),
+      radial-gradient(500px 220px at 0% 130%, rgba(110,12,20,0.26), transparent 60%),
       linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01)), var(--panel);
     border:1px solid var(--line); margin-bottom:22px; border-radius:6px;
     box-shadow:var(--shadow-md); position:relative; overflow:hidden;
@@ -78,7 +78,7 @@
   .header-controls{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
   .who{ font-size:12.5px; color:var(--muted); }
   .who b{ color:var(--bone); }
-  .role-tag{ font-size:10px; padding:2px 8px; border-radius:10px; background:rgba(107,47,168,0.2); color:#c9a9f5; border:1px solid rgba(107,47,168,0.4); text-transform:uppercase; letter-spacing:.05em; margin-left:6px; }
+  .role-tag{ font-size:10px; padding:2px 8px; border-radius:10px; background:rgba(120,15,22,0.28); color:#f5a9a9; border:1px solid rgba(160,25,32,0.45); text-transform:uppercase; letter-spacing:.05em; margin-left:6px; }
 
   select,input,button,textarea{
     font-family:'Inter',sans-serif; background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0)), var(--panel-2);
@@ -109,14 +109,14 @@
   .tabs{ display:flex; gap:4px; margin-bottom:22px; flex-wrap:wrap; padding:6px; background:var(--panel); border:1px solid var(--line); border-radius:8px; box-shadow:var(--shadow-md); }
   .tab-btn{ display:flex; align-items:center; gap:8px; background:transparent; color:var(--muted); border:1px solid transparent; padding:11px 18px; font-family:'Cinzel',serif; font-weight:600; letter-spacing:0.05em; text-transform:uppercase; font-size:13px; border-radius:6px; }
   .tab-btn:hover{ color:var(--bone); background:rgba(200,29,37,0.08); }
-  .tab-btn.active{ color:#fff; background:linear-gradient(135deg, rgba(200,29,37,0.28), rgba(107,47,168,0.28)); border-color:rgba(200,29,37,0.4); box-shadow:0 6px 18px -8px rgba(200,29,37,0.5); }
+  .tab-btn.active{ color:#fff; background:linear-gradient(135deg, rgba(200,29,37,0.28), rgba(140,20,28,0.35)); border-color:rgba(200,29,37,0.4); box-shadow:0 6px 18px -8px rgba(200,29,37,0.5); }
   .tab-btn svg{ width:15px; height:15px; opacity:.75; }
   .tab-btn.active svg{ opacity:1; color:var(--ember); }
   .tab-btn .pill{ background:var(--blood); color:#fff; font-size:10px; padding:2px 7px; border-radius:9px; margin-left:2px; }
 
   .panel{
     position:relative; background:
-      radial-gradient(600px 300px at 100% 0%, rgba(107,47,168,0.10), transparent 55%),
+      radial-gradient(600px 300px at 100% 0%, rgba(90,8,15,0.18), transparent 55%),
       linear-gradient(180deg, rgba(255,255,255,0.015), rgba(255,255,255,0)), var(--panel);
     border:1px solid var(--line); padding:26px; margin-bottom:20px; border-radius:6px;
     box-shadow:var(--shadow-md); animation:fadeIn .4s ease;
@@ -135,7 +135,7 @@
   .helper-note{ color:var(--muted); font-size:12.5px; line-height:1.6; margin-top:16px; padding:12px 14px; border-left:2px solid var(--line-strong); background:rgba(255,255,255,0.02); border-radius:0 6px 6px 0; }
   .helper-note.err{ border-left-color:var(--blood); color:#e07a80; }
 
-  .hero-stats{ display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:1px; margin-bottom:22px; background:linear-gradient(135deg, rgba(200,29,37,0.28), rgba(107,47,168,0.28)); border-radius:8px; overflow:hidden; border:1px solid var(--line); }
+  .hero-stats{ display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:1px; margin-bottom:22px; background:linear-gradient(135deg, rgba(200,29,37,0.28), rgba(140,20,28,0.35)); border-radius:8px; overflow:hidden; border:1px solid var(--line); }
   .hero-card{ background:linear-gradient(180deg, var(--panel-2), var(--panel)); padding:20px; }
   .hero-card .val{ font-family:'JetBrains Mono',monospace; font-size:26px; font-weight:600; background:linear-gradient(180deg,#fff 0%, var(--ember) 60%, var(--entity) 130%); -webkit-background-clip:text; background-clip:text; color:transparent; }
   .hero-card .lbl{ font-size:10.5px; color:var(--muted); text-transform:uppercase; letter-spacing:0.1em; margin-top:6px; }
@@ -145,7 +145,7 @@
   .badge-bronze{ background:rgba(165,103,58,0.18); color:#d69a6a; border:1px solid rgba(165,103,58,0.45); }
   .badge-prata{ background:rgba(173,180,187,0.15); color:#cfd4d9; border:1px solid rgba(173,180,187,0.4); }
   .badge-ouro{ background:rgba(212,175,55,0.16); color:#f0cf5c; border:1px solid rgba(212,175,55,0.5); }
-  .badge-iridescente{ background:linear-gradient(120deg,#7ee0d1,#a78bfa,#f472b6,#7ee0d1); background-size:300% 100%; animation:iridShift 3s linear infinite; color:#0a080b; border:1px solid transparent; font-weight:700; }
+  .badge-iridescente{ background:linear-gradient(120deg,#f0a070,#a78bfa,#f472b6,#f0a070); background-size:300% 100%; animation:iridShift 3s linear infinite; color:#0a080b; border:1px solid transparent; font-weight:700; }
 
   .tier-chip{ display:inline-flex; align-items:center; gap:8px; padding:6px 14px; border-radius:20px; font-family:'Cinzel',serif; font-weight:700; font-size:13px; letter-spacing:0.03em; }
   .status-pill{ font-size:10.5px; padding:3px 9px; border-radius:20px; text-transform:uppercase; letter-spacing:0.05em; font-weight:700; }
@@ -153,7 +153,7 @@
   .status-aprovada{ background:rgba(90,200,140,0.15); color:#7fd9a8; border:1px solid rgba(90,200,140,0.4); }
   .status-revisao{ background:rgba(200,29,37,0.15); color:#e07a80; border:1px solid rgba(200,29,37,0.4); }
   .status-rejeitada{ background:rgba(90,80,90,0.2); color:#a89e94; border:1px solid rgba(140,130,140,0.4); }
-  .custom-tag{ font-size:10px; color:#c9a9f5; background:rgba(107,47,168,0.15); border:1px solid rgba(107,47,168,0.4); padding:2px 8px; border-radius:10px; text-transform:uppercase; letter-spacing:.05em; }
+  .custom-tag{ font-size:10px; color:#f5a9a9; background:rgba(100,10,18,0.22); border:1px solid rgba(160,25,32,0.45); padding:2px 8px; border-radius:10px; text-transform:uppercase; letter-spacing:.05em; }
 
   table{ width:100%; border-collapse:collapse; }
   th{ text-align:left; font-size:10.5px; text-transform:uppercase; letter-spacing:0.08em; color:var(--muted); padding:9px 10px; border-bottom:1px solid var(--line-strong); }
@@ -182,7 +182,7 @@
   .mod-proof{ width:150px; height:100px; object-fit:cover; background:#000; flex-shrink:0; border:1px solid var(--line); border-radius:6px; cursor:pointer; }
   .mod-body{ flex:1; min-width:220px; }
   .mod-actions{ display:flex; flex-direction:column; gap:8px; align-items:flex-end; }
-  .mod-ai{ font-size:12px; margin-top:6px; color:#7ee0d1; }
+  .mod-ai{ font-size:12px; margin-top:6px; color:#f0a070; }
 
   .lightbox{ position:fixed; inset:0; background:rgba(5,4,6,0.92); z-index:80; display:flex; align-items:center; justify-content:center; padding:30px; }
   .lightbox img{ max-width:100%; max-height:100%; border-radius:6px; }
@@ -218,9 +218,9 @@ const FIREBASE_CONFIG = {
   appId: "1:275566727766:web:3382bd2d44eeba888ae1f7",
   measurementId: "G-H69BV6CBK6"
 };
-const COLLECTION = "brdbd";
-const MOD_SIGNUP_CODE = "brdbd-mod-2026";   // troque por um código secreto seu
-const ADMIN_SIGNUP_CODE = "brdbd-admin-2026"; // troque por um código secreto seu
+// Promoção a moderator/admin é feita por um admin já existente (aba Moderação)
+// ou diretamente pelo Firebase Console — nunca via código digitado no cliente.
+
 
 let db = null;
 try{
@@ -297,7 +297,7 @@ const TIERS = [
   {name:"Devoto V",                  min:3000, color:"#e8cd6e"},
   {name:"Devoto Ascendente",         min:3600, color:"#a78bfa"},
   {name:"Devoto Zeloso",             min:4250, color:"#9166f0"},
-  {name:"Favorecido da Entidade",    min:4950, color:"#7ee0d1"},
+  {name:"Favorecido da Entidade",    min:4950, color:"#f0a070"},
   {name:"Escolhido do Abismo",       min:5700, color:"#f472b6"},
   {name:"Presa Lendária",            min:6500, color:"#c81d25"},
   {name:"Lenda Iridescente",         min:7350, color:"iridescent"}
@@ -322,23 +322,50 @@ let authError = '';
 let toastTimer = null;
 let submitting = false;
 
-// ============ FIRESTORE (BANCO DE DADOS) ============
-async function getDoc(key){
-  if(!db) return null;
-  try{ const doc = await db.collection(COLLECTION).doc(key).get(); return doc.exists ? doc.data().value : null; }
-  catch(e){ console.error('Erro ao ler', key, e); return null; }
+// ============ FIRESTORE (BANCO DE DADOS — MODELO SEGURO POR DOCUMENTO) ============
+// Coleções:
+//   brdbd_users/{uid}      -> { uid, playerName, role, createdAt }  (1 doc por conta)
+//   brdbd_matches/{id}     -> { id, uid, ... }
+//   brdbd_proofs/{matchId} -> { data }
+// As regras (firestore.rules) garantem que:
+//   - o doc de usuário só pode ser criado pelo próprio dono (id == auth.uid)
+//   - o campo playerName é imutável depois do primeiro write
+//   - role só pode ser 'member' na criação (promoção a mod/admin só via Console)
+//   - uma partida só pode ser criada pelo próprio dono; ninguém edita partida alheia
+const COL_USERS = 'brdbd_users';
+const COL_MATCHES = 'brdbd_matches';
+const COL_PROOFS = 'brdbd_proofs';
+
+let unsubUsers = null, unsubMatches = null;
+
+async function createMyProfile(profile){
+  // set() em doc.id = uid; regra bloqueia sobrescrita e força role='member' na criação
+  await db.collection(COL_USERS).doc(profile.uid).set(profile);
 }
-async function setDoc(key, rawValue){
-  if(!db) return;
-  try{ await db.collection(COLLECTION).doc(key).set({ value: rawValue }); }
-  catch(e){ console.error('Erro ao salvar', key, e); }
+async function createMatch(match){
+  await db.collection(COL_MATCHES).doc(match.id).set(match);
 }
-async function deleteDoc(key){
-  if(!db) return;
-  try{ await db.collection(COLLECTION).doc(key).delete(); }catch(e){}
+async function patchMatch(id, patch){
+  await db.collection(COL_MATCHES).doc(id).update(patch);
 }
-async function loadShared(key, fallback){ const v = await getDoc(key); return v ? JSON.parse(v) : fallback; }
-async function saveShared(key, val){ await setDoc(key, JSON.stringify(val)); }
+async function patchUserRole(uid, role){
+  await db.collection(COL_USERS).doc(uid).update({ role });
+}
+async function saveProof(id, data){
+  await db.collection(COL_PROOFS).doc(id).set({ data });
+}
+async function deleteProof(id){
+  try{ await db.collection(COL_PROOFS).doc(id).delete(); }catch(e){}
+}
+async function getProof(id){
+  try{ const d = await db.collection(COL_PROOFS).doc(id).get(); return d.exists ? (d.data().data || null) : null; }
+  catch(e){ return null; }
+}
+async function fetchMatchOnce(id){
+  const d = await db.collection(COL_MATCHES).doc(id).get();
+  return d.exists ? d.data() : null;
+}
+
 
 // ============ LÓGICA DE DEVOÇÃO ============
 function matchPoints(m){
@@ -489,14 +516,14 @@ function tierProgressHTML(devotion){
   const isIrid = tier.color === 'iridescent';
   return `
     <div>
-      <span class="tier-chip" style="${isIrid ? 'background:linear-gradient(120deg,#7ee0d1,#a78bfa,#f472b6,#7ee0d1);background-size:300% 100%;animation:iridShift 3s linear infinite;color:#0a080b;' : `background:${tier.color}22;color:${tier.color};border:1px solid ${tier.color}55;`}">${tier.name}</span>
+      <span class="tier-chip" style="${isIrid ? 'background:linear-gradient(120deg,#f0a070,#a78bfa,#f472b6,#f0a070);background-size:300% 100%;animation:iridShift 3s linear infinite;color:#0a080b;' : `background:${tier.color}22;color:${tier.color};border:1px solid ${tier.color}55;`}">${tier.name}</span>
       <div class="progress-track"><div class="progress-fill" style="width:${into}%;"></div></div>
       <p class="empty-note" style="margin-top:6px;">${devotion} pts de devoção ${next ? '· faltam ' + (next.min - devotion) + ' pts para ' + next.name : '· nível máximo alcançado'}</p>
     </div>`;
 }
 function tierChipHTML(tier){
   const isIrid = tier.color === 'iridescent';
-  return `<span class="tier-chip" style="${isIrid ? 'background:linear-gradient(120deg,#7ee0d1,#a78bfa,#f472b6,#7ee0d1);background-size:300% 100%;animation:iridShift 3s linear infinite;color:#0a080b;font-size:12px;padding:4px 10px;' : `background:${tier.color}22;color:${tier.color};border:1px solid ${tier.color}55;font-size:12px;padding:4px 10px;`}">${tier.name}</span>`;
+  return `<span class="tier-chip" style="${isIrid ? 'background:linear-gradient(120deg,#f0a070,#a78bfa,#f472b6,#f0a070);background-size:300% 100%;animation:iridShift 3s linear infinite;color:#0a080b;font-size:12px;padding:4px 10px;' : `background:${tier.color}22;color:${tier.color};border:1px solid ${tier.color}55;font-size:12px;padding:4px 10px;`}">${tier.name}</span>`;
 }
 function traduzErroAuth(e){
   const code = e && e.code || '';
@@ -533,10 +560,6 @@ function renderAuthGate(){
       ${authView === 'signup' ? `<div class="field"><label>Seu nick de sobrevivente (só pode escolher uma vez)</label><input type="text" id="auth_nick" placeholder="Ex: DwightF"></div>` : ''}
       <div class="field"><label>Email</label><input type="email" id="auth_email"></div>
       <div class="field"><label>Senha</label><input type="password" id="auth_pass"></div>
-      ${authView === 'signup' ? `
-        <div class="field"><label>Código de moderador (opcional)</label><input type="text" id="auth_modcode" placeholder="Deixe em branco se não for staff"></div>
-        <div class="field"><label>Código de administrador (opcional)</label><input type="text" id="auth_admincode" placeholder="Deixe em branco se não for admin"></div>
-      ` : ''}
       ${authError ? `<div class="helper-note err">${authError}</div>` : ''}
       <div style="margin-top:16px; display:flex; gap:10px; flex-wrap:wrap;">
         <button id="authSubmitBtn" type="button">${authView === 'login' ? 'Entrar' : 'Criar conta'}</button>
@@ -563,15 +586,17 @@ function renderAuthGate(){
       if(authView === 'signup'){
         const nick = document.getElementById('auth_nick').value.trim();
         if(!nick){ authError='Digite um nick.'; btn.disabled=false; renderAuthGate(); return; }
-        const modCode = document.getElementById('auth_modcode').value.trim();
-        const adminCode = document.getElementById('auth_admincode').value.trim();
-        const role = adminCode === ADMIN_SIGNUP_CODE ? 'admin' : (modCode === MOD_SIGNUP_CODE ? 'moderator' : 'member');
+        if(nick.length < 2 || nick.length > 24 || !/^[\p{L}\p{N}_.\- ]+$/u.test(nick)){
+          authError='Nick inválido (2 a 24 caracteres, sem símbolos estranhos).'; btn.disabled=false; renderAuthGate(); return;
+        }
+        // Códigos de mod/admin foram removidos: a regra de segurança força role='member' na criação.
+        // Promoção a moderator/admin é feita por um admin já existente (aba Moderação) ou pelo Firebase Console.
         const cred = await firebase.auth().createUserWithEmailAndPassword(email, pass);
-        users.push({uid: cred.user.uid, playerName: nick, role});
-        await saveShared('brdbd:users', users);
+        await createMyProfile({ uid: cred.user.uid, playerName: nick, role: 'member', createdAt: Date.now() });
       } else {
         await firebase.auth().signInWithEmailAndPassword(email, pass);
       }
+
     }catch(e){ authError = traduzErroAuth(e); btn.disabled=false; renderAuthGate(); }
   });
 }
@@ -585,22 +610,26 @@ function renderProfileSetupGate(){
       <h2>Escolha seu sobrevivente</h2>
       <p class="empty-note">Cada conta pode ter só um nick — depois de criado, ele fica ligado ao seu login pra sempre.</p>
       <div class="field"><label>Seu nick de sobrevivente</label><input type="text" id="setup_nick" placeholder="Ex: DwightF"></div>
-      <div class="field"><label>Código de moderador (opcional)</label><input type="text" id="setup_modcode"></div>
-      <div class="field"><label>Código de administrador (opcional)</label><input type="text" id="setup_admincode"></div>
       ${authError ? `<div class="helper-note err">${authError}</div>` : ''}
       <button id="setupSubmitBtn" type="button" style="margin-top:14px;">Concluir</button>
     </div>`;
   document.getElementById('setupSubmitBtn').addEventListener('click', async () => {
     const nick = document.getElementById('setup_nick').value.trim();
     if(!nick){ authError='Digite um nick.'; renderProfileSetupGate(); return; }
-    const modCode = document.getElementById('setup_modcode').value.trim();
-    const adminCode = document.getElementById('setup_admincode').value.trim();
-    const role = adminCode === ADMIN_SIGNUP_CODE ? 'admin' : (modCode === MOD_SIGNUP_CODE ? 'moderator' : 'member');
-    userProfile = {uid: authUser.uid, playerName: nick, role};
-    users.push(userProfile);
-    await saveShared('brdbd:users', users);
-    render();
+    if(nick.length < 2 || nick.length > 24 || !/^[\p{L}\p{N}_.\- ]+$/u.test(nick)){
+      authError='Nick inválido (2 a 24 caracteres, sem símbolos estranhos).'; renderProfileSetupGate(); return;
+    }
+    try{
+      userProfile = { uid: authUser.uid, playerName: nick, role: 'member', createdAt: Date.now() };
+      await createMyProfile(userProfile);
+      render();
+    }catch(e){
+      console.error(e);
+      authError = 'Não foi possível concluir. Esse nick já existe ou você já registrou um sobrevivente.';
+      renderProfileSetupGate();
+    }
   });
+
 }
 
 // ============ SHELL (HEADER + TABS) ============
@@ -741,35 +770,32 @@ function renderRegistrar(){
       }
     }
 
-    matches.push(match);
-    await saveShared('brdbd:matches', matches);
+    await createMatch(match);
     showToast('Partida enviada! Verificando o print em segundo plano...');
     activeTab = 'perfil'; submitting = false;
     render();
 
     let proofData = null;
     try{ proofData = await compressImage(file); }catch(err){ console.error(err); }
-    if(proofData){ await setDoc('proof:' + match.id, proofData); }
+    if(proofData){ await saveProof(match.id, proofData); }
     if(!proofData) return;
 
     const ai = await analyzeProof(proofData, mode, role);
-    const fresh = await loadShared('brdbd:matches', []);
-    const idx = fresh.findIndex(m => m.id === match.id);
-    if(idx === -1) return;
-    const m = fresh[idx];
-    if(m.status !== 'pendente') return;
+    const m = await fetchMatchOnce(match.id);
+    if(!m || m.status !== 'pendente') return;
+    const patch = {};
 
     if(!ai || ai.legivel === false){
-      m.status = 'revisao';
-      m.aiNote = 'A IA não conseguiu confirmar os dados no print — aguardando revisão de um moderador.' + (ai && ai.observacao ? ' (' + ai.observacao + ')' : '');
+      patch.status = 'revisao';
+      patch.aiNote = 'A IA não conseguiu confirmar os dados no print — aguardando revisão de um moderador.' + (ai && ai.observacao ? ' (' + ai.observacao + ')' : '');
     } else if(mode === '1v1'){
       if(ai.resultado && ai.resultado !== m.result1v1){
-        m.status = 'revisao';
-        m.aiNote = 'A IA identificou resultado diferente do informado (' + ai.resultado + ') — revisão necessária.';
+        patch.status = 'revisao';
+        patch.aiNote = 'A IA identificou resultado diferente do informado (' + ai.resultado + ') — revisão necessária.';
       } else {
-        m.status = 'aprovada';
-        m.aiNote = 'IA confirmou o resultado do duelo no print.';
-        await deleteDoc('proof:' + m.id);
+        patch.status = 'aprovada';
+        patch.aiNote = 'IA confirmou o resultado do duelo no print.';
+        await deleteProof(m.id);
       }
     } else {
       const cats = categoriesFor(role);
@@ -783,21 +809,23 @@ function renderRegistrar(){
         escapeWarning = 'A IA identificou resultado diferente do informado (' + (ai.escapou ? 'escapou' : 'não escapou') + ') — revisão necessária.';
       }
       if(diffs.length === 0 && !escapeWarning){
-        m.status = 'aprovada';
-        m.aiNote = 'IA confirmou as insígnias do print.';
-        await deleteDoc('proof:' + m.id);
+        patch.status = 'aprovada';
+        patch.aiNote = 'IA confirmou as insígnias do print.';
+        await deleteProof(m.id);
       } else if(escapeWarning){
-        m.status = 'revisao';
-        m.aiNote = escapeWarning;
+        patch.status = 'revisao';
+        patch.aiNote = escapeWarning;
       } else {
-        diffs.forEach(d => { m.emblems[d.key] = d.val; });
-        m.correctedByAI = true;
-        m.status = 'aprovada';
-        m.aiNote = 'IA ajustou insígnias divergentes do print: ' + diffs.map(d => d.field + ' ' + d.from + ' → ' + d.to).join(', ');
+        const newEmblems = { ...m.emblems };
+        diffs.forEach(d => { newEmblems[d.key] = d.val; });
+        patch.emblems = newEmblems;
+        patch.correctedByAI = true;
+        patch.status = 'aprovada';
+        patch.aiNote = 'IA ajustou insígnias divergentes do print: ' + diffs.map(d => d.field + ' ' + d.from + ' → ' + d.to).join(', ');
       }
     }
-    fresh[idx] = m; matches = fresh;
-    await saveShared('brdbd:matches', fresh);
+    try{ await patchMatch(m.id, patch); }catch(e){ console.error(e); }
+
     if(activeTab === 'perfil' || activeTab === 'moderacao') render();
   });
 }
@@ -906,7 +934,7 @@ async function renderModeracao(){
   const isAdmin = userProfile.role === 'admin';
 
   const cardsHTML = queue.length ? await Promise.all(queue.map(async (m) => {
-    let proofSrc = await getDoc('proof:' + m.id);
+    let proofSrc = await getProof(m.id);
     const modeLabel = MODES[m.mode].label + (m.custom ? ' <span class="custom-tag">custom</span>' : '');
     const roleLabel = m.mode === '1v1' ? '' : (m.role === 'killer' ? ' · Killer' : ' · Sobrevivente');
     let detail;
@@ -960,36 +988,37 @@ async function renderModeracao(){
   document.querySelectorAll('[data-view]').forEach(img => img.addEventListener('click', () => openLightbox(img.src)));
   document.querySelectorAll('[data-approve]').forEach(btn => btn.addEventListener('click', async () => {
     const id = btn.dataset.approve;
-    const fresh = await loadShared('brdbd:matches', []);
-    const m = fresh.find(m => m.id === id);
-    if(m){ m.status = 'aprovada'; m.aiNote = (m.aiNote ? m.aiNote + ' ' : '') + 'Aprovada manualmente por ' + userProfile.playerName + '.'; }
-    matches = fresh;
-    await saveShared('brdbd:matches', fresh);
-    await deleteDoc('proof:' + id);
+    const m = await fetchMatchOnce(id);
+    if(!m) return;
+    const aiNote = (m.aiNote ? m.aiNote + ' ' : '') + 'Aprovada manualmente por ' + userProfile.playerName + '.';
+    try{
+      await patchMatch(id, { status: 'aprovada', aiNote });
+      await deleteProof(id);
+    }catch(e){ console.error(e); showToast('Sem permissão para aprovar.'); return; }
     renderModeracao();
   }));
   document.querySelectorAll('[data-reject]').forEach(btn => btn.addEventListener('click', async () => {
     if(!confirm('Rejeitar esta partida?')) return;
     const id = btn.dataset.reject;
-    const fresh = await loadShared('brdbd:matches', []);
-    const m = fresh.find(m => m.id === id);
-    if(m){ m.status = 'rejeitada'; m.aiNote = (m.aiNote ? m.aiNote + ' ' : '') + 'Rejeitada manualmente por ' + userProfile.playerName + '.'; }
-    matches = fresh;
-    await saveShared('brdbd:matches', fresh);
-    await deleteDoc('proof:' + id);
+    const m = await fetchMatchOnce(id);
+    if(!m) return;
+    const aiNote = (m.aiNote ? m.aiNote + ' ' : '') + 'Rejeitada manualmente por ' + userProfile.playerName + '.';
+    try{
+      await patchMatch(id, { status: 'rejeitada', aiNote });
+      await deleteProof(id);
+    }catch(e){ console.error(e); showToast('Sem permissão para rejeitar.'); return; }
     renderModeracao();
   }));
   document.querySelectorAll('[data-save-role]').forEach(btn => btn.addEventListener('click', async () => {
     const uid = btn.dataset.saveRole;
     const sel = document.querySelector(`[data-role-select="${uid}"]`);
-    const fresh = await loadShared('brdbd:users', []);
-    const u = fresh.find(u => u.uid === uid);
-    if(u) u.role = sel.value;
-    users = fresh;
-    await saveShared('brdbd:users', fresh);
-    showToast('Cargo atualizado.');
+    try{
+      await patchUserRole(uid, sel.value);
+      showToast('Cargo atualizado.');
+    }catch(e){ console.error(e); showToast('Sem permissão para alterar cargos.'); }
     renderModeracao();
   }));
+
 }
 
 // ============ RENDER PRINCIPAL ============
@@ -1016,15 +1045,29 @@ async function init(){
     document.getElementById('app').innerHTML = '<div class="helper-note err">O sistema de login (Firebase Authentication) não pôde ser iniciado. Ative Email/Senha, Google e GitHub em Build → Authentication → Sign-in method no seu projeto Firebase.</div>';
     return;
   }
+  let unsubUsers = null, unsubMatches = null;
   auth.onAuthStateChanged(async (user) => {
-    if(!user){ authUser=null; userProfile=null; render(); return; }
+    if(unsubUsers){ unsubUsers(); unsubUsers = null; }
+    if(unsubMatches){ unsubMatches(); unsubMatches = null; }
+    if(!user){ authUser=null; userProfile=null; users=[]; matches=[]; render(); return; }
     authUser = user;
-    users = await loadShared('brdbd:users', []);
-    matches = await loadShared('brdbd:matches', []);
-    matches.forEach(m => { if(!m.status) m.status = 'aprovada'; });
-    userProfile = users.find(u => u.uid === user.uid) || null;
+    try{
+      const mine = await db.collection(COL_USERS).doc(user.uid).get();
+      userProfile = mine.exists ? mine.data() : null;
+    }catch(e){ userProfile = null; }
     render();
+    unsubMatches = db.collection(COL_MATCHES).onSnapshot(snap => {
+      matches = snap.docs.map(d => { const m = d.data(); if(!m.status) m.status='aprovada'; return m; });
+      render();
+    }, err => console.error('matches listener:', err));
+    unsubUsers = db.collection(COL_USERS).onSnapshot(snap => {
+      users = snap.docs.map(d => d.data());
+      const me = users.find(u => u.uid === user.uid);
+      if(me) userProfile = me;
+      render();
+    }, err => console.error('users listener:', err));
   });
+
 }
 init();
 </script>
