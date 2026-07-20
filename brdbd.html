@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BRDBD — Painel de Devoção</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50 5 L61 38 L96 38 L67 59 L78 92 L50 71 L22 92 L33 59 L4 38 L39 38 Z' fill='%23c81d25'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;900&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --void:#08070a;
+    --void-2:#0c0a0e;
+    --panel:#141116;
+    --panel-2:#1b1620;
+    --panel-3:#241c28;
+    --line: rgba(200,150,150,0.09);
+    --line-strong: rgba(200,150,150,0.22);
+    --bone:#e9dfd0;
+    --bone-dim:#a89e94;
+    --muted:#8d8390;
+    --blood:#c81d25;
+    --blood-2:#7a1015;
+    --blood-glow: rgba(200,29,37,0.35);
+    --ember:#e0703a;
+    --entity: #6b2fa8;
+    --entity-2:#3a1a5c;
+    --bronze:#a5673a;
+    --prata:#adb4bb;
+    --ouro:#d4af37;
+    --irid-grad: linear-gradient(120deg,#7ee0d1,#a78bfa,#f472b6,#7ee0d1);
+    --shadow-md: 0 14px 40px -14px rgba(0,0,0,0.85), 0 2px 10px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.03);
+  }
+  *{box-sizing:border-box;}
+  html,body{min-height:100%;}
+  body{
+    margin:0; color:var(--bone); font-family:'Inter',sans-serif; -webkit-font-smoothing:antialiased;
+    min-height:100vh; position:relative; overflow-x:hidden;
+    background:
+      radial-gradient(900px 600px at 85% -10%, rgba(200,29,37,0.14), transparent 60%),
+      radial-gradient(800px 700px at -10% 20%, rgba(107,47,168,0.16), transparent 60%),
+      radial-gradient(1000px 800px at 50% 115%, rgba(200,29,37,0.10), transparent 60%),
+      linear-gradient(180deg, #0a080b 0%, #08070a 55%, #0b0810 100%);
+    background-attachment:fixed;
+  }
+  body::before{
+    content:""; position:fixed; inset:0; pointer-events:none; z-index:0; opacity:.5;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
+  }
+  /* veias da Entidade — elemento de assinatura */
+  .entity-veins{ position:fixed; inset:0; pointer-events:none; z-index:0; opacity:.4; mix-blend-mode:screen; }
+  h1,h2,h3,.display{ font-family:'Cinzel',serif; letter-spacing:0.02em; margin:0; }
+  .mono{ font-family:'JetBrains Mono',monospace; }
+  ::selection{ background:var(--blood); color:#0a080b; }
+
+  @keyframes fadeIn{ from{opacity:0; transform:translateY(8px);} to{opacity:1; transform:translateY(0);} }
+  @keyframes veinPulse{ 0%,100%{ opacity:.28;} 50%{ opacity:.55;} }
+  @keyframes iridShift{ 0%{background-position:0% 50%;} 100%{background-position:200% 50%;} }
+  @keyframes flicker{ 0%,100%{opacity:1;} 92%{opacity:1;} 93%{opacity:.55;} 94%{opacity:1;} 96%{opacity:.7;} 97%{opacity:1;} }
+  @keyframes floaty{ 0%,100%{transform:translateY(0);} 50%{transform:translateY(-4px);} }
+
+  .app{ position:relative; z-index:1; max-width:1180px; margin:0 auto; padding:30px 20px 90px; }
+
+  .header{
+    display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap;
+    padding:24px 28px; background:
+      radial-gradient(500px 200px at 92% -30%, rgba(200,29,37,0.16), transparent 60%),
+      radial-gradient(500px 220px at 0% 130%, rgba(107,47,168,0.18), transparent 60%),
+      linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01)), var(--panel);
+    border:1px solid var(--line); margin-bottom:22px; border-radius:6px;
+    box-shadow:var(--shadow-md); position:relative; overflow:hidden;
+  }
+  .header::before{
+    content:""; position:absolute; left:0; right:0; top:0; height:1px;
+    background:linear-gradient(90deg, transparent, var(--blood), var(--entity), transparent);
+    background-size:200% 100%; animation:iridShift 7s linear infinite;
+  }
+  .brand{ display:flex; align-items:center; gap:16px; }
+  .brand-mark{
+    width:46px; height:46px; flex-shrink:0;
+    background: linear-gradient(135deg, var(--blood), var(--blood-2));
+    clip-path: polygon(50% 0%, 61% 38%, 96% 38%, 67% 59%, 78% 92%, 50% 71%, 22% 92%, 33% 59%, 4% 38%, 39% 38%);
+    animation: floaty 5s ease-in-out infinite, flicker 6s ease-in-out infinite;
+    filter: drop-shadow(0 6px 16px rgba(200,29,37,0.55));
+  }
+  .brand h1{ font-size:25px; color:#fff; text-transform:uppercase; }
+  .brand p{ margin:5px 0 0; font-size:11px; color:var(--muted); letter-spacing:0.18em; text-transform:uppercase; }
+  .header-controls{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+  .who{ font-size:12.5px; color:var(--muted); }
+  .who b{ color:var(--bone); }
+
+  select,input,button,textarea{
+    font-family:'Inter',sans-serif; background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0)), var(--panel-2);
+    color:var(--bone); border:1px solid var(--line); padding:10px 13px; font-size:14px; border-radius:6px;
+    transition:border-color .2s ease, box-shadow .2s ease;
+  }
+  select{ min-width:150px; appearance:none;
+    background-image: linear-gradient(45deg, transparent 50%, var(--bone-dim) 50%), linear-gradient(135deg, var(--bone-dim) 50%, transparent 50%), linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0)), var(--panel-2);
+    background-position: calc(100% - 16px) 55%, calc(100% - 11px) 55%, 0 0, 0 0;
+    background-size:5px 5px,5px 5px,100% 100%,100% 100%; background-repeat:no-repeat; padding-right:34px;
+  }
+  input:hover,select:hover,textarea:hover{ border-color:var(--line-strong); }
+  input:focus,select:focus,textarea:focus{ outline:none; border-color:var(--blood); box-shadow:0 0 0 3px rgba(200,29,37,0.18); }
+  button{
+    cursor:pointer; background:linear-gradient(135deg, var(--blood), var(--blood-2)); color:#fff; font-weight:700;
+    border:none; text-transform:uppercase; letter-spacing:0.06em; font-size:12.5px; border-radius:6px;
+    box-shadow:0 6px 18px -6px rgba(200,29,37,0.6), inset 0 1px 0 rgba(255,255,255,0.15);
+  }
+  button:hover:not(:disabled){ filter:brightness(1.1); transform:translateY(-1px); }
+  button:active:not(:disabled){ transform:translateY(0); }
+  button:disabled{ opacity:.5; cursor:wait; }
+  button.secondary{ background:linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0)), var(--panel-2); color:var(--bone); border:1px solid var(--line-strong); }
+  button.small{ padding:7px 12px; font-size:11px; }
+
+  .tabs{ display:flex; gap:4px; margin-bottom:22px; flex-wrap:wrap; padding:6px; background:var(--panel); border:1px solid var(--line); border-radius:8px; box-shadow:var(--shadow-md); }
+  .tab-btn{ display:flex; align-items:center; gap:8px; background:transparent; color:var(--muted); border:1px solid transparent; padding:11px 18px; font-family:'Cinzel',serif; font-weight:600; letter-spacing:0.05em; text-transform:uppercase; font-size:13px; border-radius:6px; }
+  .tab-btn:hover{ color:var(--bone); background:rgba(200,29,37,0.08); }
+  .tab-btn.active{ color:#fff; background:linear-gradient(135deg, rgba(200,29,37,0.28), rgba(107,47,168,0.28)); border-color:rgba(200,29,37,0.4); box-shadow:0 6px 18px -8px rgba(200,29,37,0.5); }
+  .tab-btn svg{ width:15px; height:15px; opacity:.75; }
+  .tab-btn.active svg{ opacity:1; color:var(--ember); }
+
+  .panel{
+    position:relative; background:
+      radial-gradient(600px 300px at 100% 0%, rgba(107,47,168,0.10), transparent 55%),
+      linear-gradient(180deg, rgba(255,255,255,0.015), rgba(255,255,255,0)), var(--panel);
+    border:1px solid var(--line); padding:26px; margin-bottom:20px; border-radius:6px;
+    box-shadow:var(--shadow-md); animation:fadeIn .4s ease;
+  }
+  .panel::before{ content:""; position:absolute; left:0; right:0; top:0; height:2px; background:linear-gradient(90deg, transparent, var(--blood), var(--entity), transparent); background-size:200% 100%; animation:iridShift 6s linear infinite; }
+  .panel h2{ font-size:19px; color:#fff; margin-bottom:16px; display:flex; align-items:center; gap:10px; text-transform:uppercase; }
+  .panel h2 .sub{ color:var(--muted); font-size:12px; text-transform:none; letter-spacing:0; font-family:'Inter'; font-weight:400; }
+
+  .grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:14px; }
+  .field label{ display:block; font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:0.1em; margin-bottom:7px; }
+  .field select,.field input,.field textarea{ width:100%; }
+  .empty-note{ color:var(--muted); font-size:13px; padding:8px 0; }
+  .helper-note{ color:var(--muted); font-size:12.5px; line-height:1.6; margin-top:16px; padding:12px 14px; border-left:2px solid var(--line-strong); background:rgba(255,255,255,0.02); border-radius:0 6px 6px 0; }
+
+  .hero-stats{ display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:1px; margin-bottom:22px; background:linear-gradient(135deg, rgba(200,29,37,0.28), rgba(107,47,168,0.28)); border-radius:8px; overflow:hidden; border:1px solid var(--line); }
+  .hero-card{ background:linear-gradient(180deg, var(--panel-2), var(--panel)); padding:20px; }
+  .hero-card .val{ font-family:'JetBrains Mono',monospace; font-size:26px; font-weight:600; background:linear-gradient(180deg,#fff 0%, var(--ember) 60%, var(--entity) 130%); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .hero-card .lbl{ font-size:10.5px; color:var(--muted); text-transform:uppercase; letter-spacing:0.1em; margin-top:6px; }
+
+  .badge{ display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:20px; font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:0.04em; }
+  .badge-nenhum{ background:rgba(141,131,144,0.15); color:var(--muted); border:1px solid rgba(141,131,144,0.3); }
+  .badge-bronze{ background:rgba(165,103,58,0.18); color:#d69a6a; border:1px solid rgba(165,103,58,0.45); }
+  .badge-prata{ background:rgba(173,180,187,0.15); color:#cfd4d9; border:1px solid rgba(173,180,187,0.4); }
+  .badge-ouro{ background:rgba(212,175,55,0.16); color:#f0cf5c; border:1px solid rgba(212,175,55,0.5); }
+  .badge-iridescente{ background:linear-gradient(120deg,#7ee0d1,#a78bfa,#f472b6,#7ee0d1); background-size:300% 100%; animation:iridShift 3s linear infinite; color:#0a080b; border:1px solid transparent; font-weight:700; }
+
+  .tier-chip{ display:inline-flex; align-items:center; gap:8px; padding:6px 14px; border-radius:20px; font-family:'Cinzel',serif; font-weight:700; font-size:13px; letter-spacing:0.03em; }
+  .status-pill{ font-size:10.5px; padding:3px 9px; border-radius:20px; text-transform:uppercase; letter-spacing:0.05em; font-weight:700; }
+  .status-pendente{ background:rgba(212,175,55,0.15); color:#e0c258; border:1px solid rgba(212,175,55,0.4); }
+  .status-aprovada{ background:rgba(90,200,140,0.15); color:#7fd9a8; border:1px solid rgba(90,200,140,0.4); }
+  .status-revisao{ background:rgba(200,29,37,0.15); color:#e07a80; border:1px solid rgba(200,29,37,0.4); }
+
+  table{ width:100%; border-collapse:collapse; }
+  th{ text-align:left; font-size:10.5px; text-transform:uppercase; letter-spacing:0.08em; color:var(--muted); padding:9px 10px; border-bottom:1px solid var(--line-strong); }
+  td{ padding:11px 10px; font-size:13.5px; border-bottom:1px solid var(--line); }
+  tr:hover td{ background:rgba(255,255,255,0.015); }
+  .rank-1{ color:#f0cf5c; font-weight:700; }
+  .rank-2{ color:#cfd4d9; font-weight:700; }
+  .rank-3{ color:#d69a6a; font-weight:700; }
+
+  .toast{ position:fixed; left:50%; bottom:26px; transform:translateX(-50%); background:var(--panel-3); border:1px solid var(--line-strong); color:var(--bone); padding:12px 20px; border-radius:8px; font-size:13px; box-shadow:var(--shadow-md); z-index:50; animation:fadeIn .3s ease; }
+
+  .progress-track{ height:8px; border-radius:6px; background:rgba(255,255,255,0.06); overflow:hidden; margin-top:8px; }
+  .progress-fill{ height:100%; background:linear-gradient(90deg, var(--blood), var(--entity)); border-radius:6px; }
+
+  .emblem-row{ display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:12px; }
+  .emblem-card{ padding:14px; border:1px solid var(--line); border-radius:6px; background:rgba(255,255,255,0.015); }
+  .emblem-card label{ display:block; font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:4px; }
+  .emblem-card .desc{ font-size:11px; color:var(--muted); margin-bottom:8px; }
+
+  .file-drop{ border:1.5px dashed var(--line-strong); border-radius:8px; padding:18px; text-align:center; font-size:13px; color:var(--muted); cursor:pointer; }
+  .file-drop:hover{ border-color:var(--blood); color:var(--bone); }
+  .preview-thumb{ max-width:100%; max-height:220px; border-radius:6px; margin-top:10px; border:1px solid var(--line-strong); }
+
+  @media (max-width:640px){ .header{ padding:18px; } .brand h1{ font-size:20px; } .app{ padding:20px 12px 70px; } }
+</style>
+</head>
+<body>
+<svg class="entity-veins" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice">
+  <g stroke="#c81d25" stroke-width="1.4" fill="none" opacity="0.5">
+    <path d="M0,60 C120,90 180,40 260,80 S420,140 480,90" style="animation:veinPulse 5s ease-in-out infinite;"/>
+    <path d="M1200,120 C1080,150 1000,90 920,130 S780,190 700,140" style="animation:veinPulse 6s ease-in-out infinite .8s;"/>
+    <path d="M0,720 C100,680 200,740 300,700 S480,650 560,700" style="animation:veinPulse 7s ease-in-out infinite 1.5s;"/>
+    <path d="M1200,700 C1080,660 1020,730 900,690 S760,640 680,690" style="animation:veinPulse 5.5s ease-in-out infinite 2s;"/>
+  </g>
+</svg>
+<div class="app" id="app"></div>
+
+<script>
+// ============ DADOS BASE ============
+const CATEGORIES = [
+  {key:'benevolent', label:'Benevolente', desc:'Curas, resgates e proteção a outros sobreviventes'},
+  {key:'objective',  label:'Objetivo',    desc:'Geradores, totens e abrir os portões'},
+  {key:'survival',   label:'Sobrevivência', desc:'Se manter vivo e escapar da Entidade'},
+  {key:'boldness',   label:'Ousadia',     desc:'Perseguições, escapes por pouco e distrações'}
+];
+const GRADES = {
+  nenhum:      {label:'Nenhum',   pts:0,   order:0},
+  bronze:      {label:'Bronze',   pts:45,  order:1},
+  prata:       {label:'Prata',    pts:90,  order:2},
+  ouro:        {label:'Ouro',     pts:180, order:3},
+  iridescente: {label:'Irisado',  pts:270, order:4}
+};
+const GRADE_KEYS = ['nenhum','bronze','prata','ouro','iridescente'];
+
+const MAPS_BY_REALM = {
+  "MacMillan Estate": ["Coal Tower","Shelter Woods","Suffocation Pit","Ironworks of Misery","Gas Heaven"],
+  "Autohaven Wreckers": ["Wreckers' Yard","Blood Lodge","Azarov's Resting Place","Torment Creek"],
+  "Coldwind Farm": ["Thompson House","Rotten Fields","Fractured Cowshed","Rancid Abattoir"],
+  "Crotus Prenn Asylum": ["Disturbed Ward","Father Campbell's Chapel"],
+  "Backwater Swamp": ["Grim Pantry","The Pale Rose"],
+  "Léry's Memorial Institute": ["Treatment Theatre"],
+  "Red Forest": ["Mother's Dwelling","Temple of Purgation"],
+  "Gideon Meat Plant": ["The Game"],
+  "Yamaoka Estate": ["Family Residence","Sanctum of Wrath"],
+  "Hawkins National Laboratory": ["Hawkins National Laboratory"],
+  "Grave of Glenvale": ["Dead Dawg Saloon"],
+  "Silent Hill": ["Midwich Elementary School"],
+  "Raccoon City": ["RPD Ala Leste","RPD Ala Oeste"],
+  "Forsaken Boneyard": ["Eyrie of Crows"],
+  "Withered Isle": ["Greenville Square","Garden of Joy"],
+  "The Decimated Borgo": ["Forgotten Ruins","The Shattered Square"],
+  "Dvarka Deepwood": ["Nostromo Wreckage","Toba Landing"],
+  "Springwood": ["Badham Preschool"],
+  "Ormond": ["Mount Ormond Resort"],
+  "Haddonfield": ["Lampkin Lane"]
+};
+const ALL_MAPS = Object.values(MAPS_BY_REALM).flat();
+
+const TIERS = [
+  {name:"Sobrevivente Ferido",       min:0,    color:"#8d8390"},
+  {name:"Sobrevivente Cauteloso",    min:200,  color:"#9a8e88"},
+  {name:"Sobrevivente Resiliente",   min:450,  color:"#a5673a"},
+  {name:"Sobrevivente Veterano",     min:750,  color:"#c07d46"},
+  {name:"Devoto I",                  min:1100, color:"#adb4bb"},
+  {name:"Devoto II",                 min:1500, color:"#bfc6cc"},
+  {name:"Devoto III",                min:1950, color:"#d4af37"},
+  {name:"Devoto IV",                 min:2450, color:"#e0c258"},
+  {name:"Devoto V",                  min:3000, color:"#e8cd6e"},
+  {name:"Devoto Ascendente",         min:3600, color:"#a78bfa"},
+  {name:"Devoto Zeloso",             min:4250, color:"#9166f0"},
+  {name:"Favorecido da Entidade",    min:4950, color:"#7ee0d1"},
+  {name:"Escolhido do Abismo",       min:5700, color:"#f472b6"},
+  {name:"Presa Lendária",            min:6500, color:"#c81d25"},
+  {name:"Lenda Irisada",             min:7350, color:"iridescent"}
+];
+
+const ICONS = {
+  registrar: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3z"/><path d="M9 12l2 2 4-4"/></svg>',
+  perfil: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 5-6 8-6s6.5 2 8 6"/></svg>',
+  ranking: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9H4a2 2 0 0 1-2-2V5h4M18 9h2a2 2 0 0 0 2-2V5h-4M6 5h12v5a6 6 0 0 1-12 0V5z"/><path d="M9 21h6M12 16v5"/></svg>',
+  devocao: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l2.6 6.6L22 10l-5.4 5 1.6 7-6.2-3.6L5.8 22l1.6-7L2 10l7.4-1.4z"/></svg>'
+};
+
+// ============ ESTADO ============
+let myName = null;
+let players = [];
+let matches = [];
+let activeTab = 'registrar';
+let toastTimer = null;
+let submitting = false;
+
+// ============ STORAGE ============
+async function loadShared(key, fallback){
+  try{ const r = await window.storage.get(key, true); return r ? JSON.parse(r.value) : fallback; }
+  catch(e){ return fallback; }
+}
+async function saveShared(key, val){
+  try{ await window.storage.set(key, JSON.stringify(val), true); }catch(e){ console.error('Erro ao salvar', key, e); }
+}
+async function loadPersonal(key){
+  try{ const r = await window.storage.get(key, false); return r ? r.value : null; }catch(e){ return null; }
+}
+async function savePersonal(key, val){
+  try{ await window.storage.set(key, val, false); }catch(e){}
+}
+
+// ============ LÓGICA DE DEVOÇÃO ============
+function matchPoints(m){
+  return CATEGORIES.reduce((s,c) => s + (GRADES[m.emblems[c.key]]?.pts || 0), 0);
+}
+function countsForDevotion(m){
+  return m.status === 'aprovada' && m.escaped === true;
+}
+function computePlacement(first10){
+  const avg = first10.reduce((s,m) => s + matchPoints(m), 0) / first10.length;
+  return Math.round(avg * 9);
+}
+function computeDelta(m){
+  const perf = matchPoints(m) - 320;
+  return Math.max(-140, Math.min(320, Math.round(perf * 0.55)));
+}
+function getTier(devotion){
+  let idx = 0;
+  for(let i=0;i<TIERS.length;i++){ if(devotion >= TIERS[i].min) idx = i; }
+  return {...TIERS[idx], index: idx};
+}
+function computePlayerStats(name){
+  const pm = matches.filter(m => m.player === name && m.status !== 'rejeitada').sort((a,b) => a.createdAt - b.createdAt);
+  const total = pm.length;
+  const escapes = pm.filter(m => m.escaped).length;
+  const escapeRate = total ? (escapes/total*100) : 0;
+  const eligible = pm.filter(countsForDevotion);
+  let devotion = 0;
+  if(eligible.length >= 10){
+    const first10 = eligible.slice(0,10);
+    devotion = computePlacement(first10);
+    eligible.slice(10).forEach(m => { devotion = Math.max(0, devotion + computeDelta(m)); });
+  } else if(eligible.length > 0){
+    devotion = Math.round(eligible.reduce((s,m) => s + matchPoints(m), 0) / eligible.length * eligible.length * 0.5);
+  }
+  const avgEmblemPts = eligible.length ? (eligible.reduce((s,m)=>s+matchPoints(m),0)/eligible.length) : 0;
+  return { name, total, escapes, escapeRate, devotion, eligibleCount: eligible.length, calibrating: eligible.length < 10, avgEmblemPts };
+}
+function getRanking(){
+  return players.map(p => computePlayerStats(p.name)).filter(s => s.total > 0).sort((a,b) => b.devotion - a.devotion);
+}
+
+// ============ IMAGEM ============
+function compressImage(file){
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        const maxW = 820;
+        const scale = Math.min(1, maxW / img.width);
+        const canvas = document.createElement('canvas');
+        canvas.width = Math.round(img.width * scale);
+        canvas.height = Math.round(img.height * scale);
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        resolve(canvas.toDataURL('image/jpeg', 0.8));
+      };
+      img.onerror = reject;
+      img.src = e.target.result;
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+function extractJSON(text){
+  try{ return JSON.parse(text); }catch(e){}
+  const m = text.match(/\{[\s\S]*\}/);
+  if(m){ try{ return JSON.parse(m[0]); }catch(e){} }
+  return null;
+}
+async function analyzeProof(dataUrl){
+  try{
+    const base64 = dataUrl.split(',')[1];
+    const prompt = 'Você está analisando um print da tela de resultado final de uma partida (Trial) de Dead by Daylight, do lado do Sobrevivente. '
+      + 'Essa tela mostra até 4 emblemas/insígnias, um para cada categoria: Benevolente (altruísmo/curas), Objetivo (geradores/totens), Sobrevivência e Ousadia. '
+      + 'Cada emblema tem uma qualidade: Nenhum (categoria vazia/sem emblema), Bronze, Prata, Ouro ou Irisado (o mais alto, geralmente com um brilho/textura colorida diferente dos outros). '
+      + 'Identifique também se o jogador ESCAPOU do Trial (mensagem de fuga, portão aberto, alçapão, ou ícone de saída) ou se morreu/foi sacrificado. '
+      + 'Responda ESTRITAMENTE em JSON válido, sem markdown, sem texto antes ou depois, neste formato exato: '
+      + '{"legivel": true ou false, "escapou": true, false ou null, "benevolent": "nenhum"/"bronze"/"prata"/"ouro"/"iridescente"/null, "objective": mesmo formato, "survival": mesmo formato, "boldness": mesmo formato, "observacao": "breve nota em portugues"}. '
+      + 'Só retorne "legivel": false se a imagem estiver realmente ilegível ou não for uma tela de fim de partida de Dead by Daylight.';
+
+    const response = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-6",
+        max_tokens: 1000,
+        messages: [{
+          role: "user",
+          content: [
+            { type:"image", source:{ type:"base64", media_type:"image/jpeg", data: base64 } },
+            { type:"text", text: prompt }
+          ]
+        }]
+      })
+    });
+    const data = await response.json();
+    const text = (data.content || []).map(b => b.text || '').join('').trim();
+    return extractJSON(text);
+  }catch(e){ console.error('Erro na análise de IA', e); return null; }
+}
+
+// ============ UI HELPERS ============
+function showToast(msg){
+  let t = document.getElementById('toast');
+  if(t) t.remove();
+  t = document.createElement('div'); t.id='toast'; t.className='toast'; t.textContent = msg;
+  document.body.appendChild(t);
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => t.remove(), 3800);
+}
+function emblemBadge(grade){
+  return `<span class="badge badge-${grade}">${GRADES[grade].label}</span>`;
+}
+function statusPill(m){
+  if(m.status === 'aprovada') return `<span class="status-pill status-aprovada">Confirmada</span>`;
+  if(m.status === 'revisao') return `<span class="status-pill status-revisao">Revisar</span>`;
+  return `<span class="status-pill status-pendente">Analisando</span>`;
+}
+function mapOptionsHTML(selected){
+  return Object.entries(MAPS_BY_REALM).map(([realm, maps]) =>
+    `<optgroup label="${realm}">` + maps.map(m => `<option value="${m}" ${m===selected?'selected':''}>${m}</option>`).join('') + `</optgroup>`
+  ).join('');
+}
+function tierProgressHTML(devotion){
+  const tier = getTier(devotion);
+  const next = TIERS[tier.index+1];
+  const span = next ? next.min - tier.min : 1;
+  const into = next ? Math.min(100, Math.round((devotion - tier.min) / span * 100)) : 100;
+  const isIrid = tier.color === 'iridescent';
+  return `
+    <div>
+      <span class="tier-chip" style="${isIrid ? 'background:linear-gradient(120deg,#7ee0d1,#a78bfa,#f472b6,#7ee0d1);background-size:300% 100%;animation:iridShift 3s linear infinite;color:#0a080b;' : `background:${tier.color}22;color:${tier.color};border:1px solid ${tier.color}55;`}">${tier.name}</span>
+      <div class="progress-track"><div class="progress-fill" style="width:${into}%;"></div></div>
+      <p class="empty-note" style="margin-top:6px;">${devotion} pts de devoção ${next ? '· faltam ' + (next.min - devotion) + ' pts para ' + next.name : '· nível máximo alcançado'}</p>
+    </div>`;
+}
+
+// ============ RENDER: LOGIN DE NICK ============
+function renderNickGate(){
+  const app = document.getElementById('app');
+  app.innerHTML = `
+    <div class="header" style="justify-content:center;">
+      <div class="brand"><div class="brand-mark"></div><div><h1>BRDBD</h1><p>Painel de Devoção &amp; Insígnias</p></div></div>
+    </div>
+    <div class="panel" style="max-width:440px;margin:0 auto;">
+      <h2>Quem está entrando na névoa?</h2>
+      <p class="empty-note" style="margin-bottom:14px;">Digite o nick que você quer usar no ranking. Isso fica salvo só para você neste navegador.</p>
+      <div class="field"><label>Seu nick de sobrevivente</label><input type="text" id="nick_input" placeholder="Ex: DwightF"></div>
+      <button id="nickSubmitBtn" type="button" style="margin-top:14px;">Entrar na Névoa</button>
+    </div>`;
+  document.getElementById('nickSubmitBtn').addEventListener('click', async () => {
+    const val = document.getElementById('nick_input').value.trim();
+    if(!val){ showToast('Digite um nick antes de continuar.'); return; }
+    myName = val;
+    await savePersonal('brdbd:myname', myName);
+    if(!players.find(p => p.name.toLowerCase() === myName.toLowerCase())){
+      players.push({name: myName, createdAt: Date.now()});
+      await saveShared('brdbd:players', players);
+    }
+    render();
+  });
+}
+
+// ============ RENDER: HEADER + TABS ============
+function renderShell(innerHTML){
+  const app = document.getElementById('app');
+  app.innerHTML = `
+    <div class="header">
+      <div class="brand"><div class="brand-mark"></div><div><h1>BRDBD</h1><p>Painel de Devoção &amp; Insígnias</p></div></div>
+      <div class="header-controls">
+        <span class="who">Sobrevivente: <b>${myName}</b></span>
+        <button class="secondary small" id="switchNickBtn" type="button">Trocar nick</button>
+      </div>
+    </div>
+    <div class="tabs">
+      ${['registrar','perfil','ranking','devocao'].map(t => `
+        <button class="tab-btn ${activeTab===t?'active':''}" data-tab="${t}" type="button">
+          ${ICONS[t]}
+          ${{registrar:'Registrar Partida', perfil:'Meu Perfil', ranking:'Ranking', devocao:'Devoção'}[t]}
+        </button>`).join('')}
+    </div>
+    <div id="tabContent">${innerHTML}</div>
+  `;
+  document.querySelectorAll('.tab-btn').forEach(b => b.addEventListener('click', () => { activeTab = b.dataset.tab; render(); }));
+  document.getElementById('switchNickBtn').addEventListener('click', () => { myName = null; renderNickGate(); });
+}
+
+// ============ RENDER: REGISTRAR ============
+function renderRegistrar(){
+  const emblemFields = CATEGORIES.map(c => `
+    <div class="emblem-card">
+      <label>${c.label}</label>
+      <div class="desc">${c.desc}</div>
+      <select id="emb_${c.key}">
+        ${GRADE_KEYS.map(g => `<option value="${g}">${GRADES[g].label}</option>`).join('')}
+      </select>
+    </div>`).join('');
+
+  renderShell(`
+    <div class="panel">
+      <h2>Registrar Partida <span class="sub">anexe o print do placar final com os 4 emblemas</span></h2>
+      <form id="matchForm">
+        <div class="grid" style="margin-bottom:16px;">
+          <div class="field"><label>Data da partida</label><input type="date" id="f_date" required value="${new Date().toISOString().slice(0,10)}"></div>
+          <div class="field"><label>Mapa</label><select id="f_map">${mapOptionsHTML(ALL_MAPS[0])}</select></div>
+          <div class="field"><label>Resultado</label>
+            <select id="f_result">
+              <option value="escapou">Escapei (portão ou alçapão)</option>
+              <option value="morreu">Não escapei (morto/sacrificado)</option>
+            </select>
+          </div>
+        </div>
+        <h2 style="font-size:15px;margin-bottom:12px;">Insígnias da Partida</h2>
+        <div class="emblem-row" style="margin-bottom:16px;">${emblemFields}</div>
+        <div class="field" style="margin-bottom:16px;">
+          <label>Print do placar final (obrigatório)</label>
+          <div class="file-drop" id="dropZone">Clique para escolher o print com os 4 emblemas</div>
+          <input type="file" id="f_proof" accept="image/*" style="display:none;">
+          <img id="previewImg" class="preview-thumb" style="display:none;">
+        </div>
+        <div class="field" style="margin-bottom:6px;"><label>Observações (opcional)</label><textarea id="f_notes" rows="2" placeholder="Ex: partida contra um killer muito forte, quase morri no final..."></textarea></div>
+        <div class="helper-note">
+          Depois de enviar, uma IA lê o print em segundo plano para conferir se os emblemas batem com o que você marcou. Só partidas com <b>Escapei</b> confirmado contam pontos de devoção — matches em que você morreu ficam no seu histórico, mas não somam pontos.
+        </div>
+        <button type="submit" style="margin-top:16px;" id="submitBtn">Enviar Partida</button>
+      </form>
+    </div>
+  `);
+
+  document.getElementById('dropZone').addEventListener('click', () => document.getElementById('f_proof').click());
+  document.getElementById('f_proof').addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if(!file) return;
+    const url = URL.createObjectURL(file);
+    const img = document.getElementById('previewImg');
+    img.src = url; img.style.display = 'block';
+    document.getElementById('dropZone').textContent = file.name;
+  });
+
+  document.getElementById('matchForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if(submitting) return;
+    const file = document.getElementById('f_proof').files[0];
+    if(!file){ showToast('Anexe o print do placar final da partida.'); return; }
+    submitting = true;
+    const btn = document.getElementById('submitBtn'); btn.disabled = true; btn.textContent = 'Enviando...';
+
+    const emblems = {};
+    CATEGORIES.forEach(c => { emblems[c.key] = document.getElementById('emb_' + c.key).value; });
+
+    const match = {
+      id: 'm_' + Date.now() + '_' + Math.floor(Math.random()*1000),
+      player: myName,
+      date: document.getElementById('f_date').value,
+      map: document.getElementById('f_map').value,
+      result: document.getElementById('f_result').value,
+      escaped: document.getElementById('f_result').value === 'escapou',
+      emblems,
+      notes: document.getElementById('f_notes').value.trim(),
+      status: 'pendente',
+      aiNote: '',
+      correctedByAI: false,
+      createdAt: Date.now()
+    };
+
+    matches.push(match);
+    await saveShared('brdbd:matches', matches);
+    showToast('Partida enviada! Verificando o print em segundo plano...');
+    activeTab = 'perfil';
+    submitting = false;
+    render();
+
+    let proofData = null;
+    try{ proofData = await compressImage(file); }catch(err){ console.error(err); }
+    if(proofData){ try{ await window.storage.set('brdbd:proof:' + match.id, proofData, true); }catch(err){} }
+    if(!proofData){ return; }
+
+    const ai = await analyzeProof(proofData);
+    const fresh = await loadShared('brdbd:matches', []);
+    const idx = fresh.findIndex(m => m.id === match.id);
+    if(idx === -1) return;
+    const m = fresh[idx];
+    if(m.status !== 'pendente') return;
+
+    if(!ai || ai.legivel === false){
+      m.status = 'revisao';
+      m.aiNote = 'A IA não conseguiu confirmar os dados no print — revise manualmente.' + (ai && ai.observacao ? ' (' + ai.observacao + ')' : '');
+    } else {
+      const diffs = [];
+      CATEGORIES.forEach(c => {
+        const aiVal = ai[c.key];
+        if(aiVal && GRADES[aiVal] && aiVal !== m.emblems[c.key]) diffs.push({field:c.label, from:GRADES[m.emblems[c.key]].label, to:GRADES[aiVal].label, key:c.key, val:aiVal});
+      });
+      let escapeWarning = '';
+      if(ai.escapou !== null && ai.escapou !== undefined && ai.escapou !== m.escaped){
+        escapeWarning = 'A IA identificou resultado diferente do informado (' + (ai.escapou ? 'escapou' : 'não escapou') + ') — revise.';
+      }
+      if(diffs.length === 0 && !escapeWarning){
+        m.status = 'aprovada';
+        m.aiNote = 'IA confirmou as insígnias e o resultado do print.';
+        try{ await window.storage.delete('brdbd:proof:' + m.id, true); }catch(err){}
+      } else if(escapeWarning){
+        m.status = 'revisao';
+        m.aiNote = escapeWarning;
+      } else {
+        diffs.forEach(d => { m.emblems[d.key] = d.val; });
+        m.correctedByAI = true;
+        m.status = 'aprovada';
+        m.aiNote = 'IA ajustou insígnias divergentes do print: ' + diffs.map(d => d.field + ' ' + d.from + ' → ' + d.to).join(', ');
+      }
+    }
+    fresh[idx] = m;
+    matches = fresh;
+    await saveShared('brdbd:matches', fresh);
+    if(activeTab === 'perfil') render();
+  });
+}
+
+// ============ RENDER: PERFIL ============
+function renderPerfil(){
+  const stats = computePlayerStats(myName);
+  const myMatches = matches.filter(m => m.player === myName).sort((a,b) => b.createdAt - a.createdAt);
+
+  const rows = myMatches.length ? myMatches.map(m => `
+    <tr>
+      <td>${m.date}</td>
+      <td>${m.map}</td>
+      <td>${m.escaped ? '<span style="color:#7fd9a8;">Escapou</span>' : '<span style="color:#e07a80;">Morreu</span>'}</td>
+      <td>${CATEGORIES.map(c => emblemBadge(m.emblems[c.key])).join(' ')}</td>
+      <td class="mono">${m.escaped ? matchPoints(m) : '—'}</td>
+      <td>${statusPill(m)}</td>
+    </tr>
+    ${m.aiNote ? `<tr><td colspan="6" style="padding-top:0;color:var(--muted);font-size:12px;">↳ ${m.aiNote}</td></tr>` : ''}
+  `).join('') : `<tr><td colspan="6" class="empty-note">Nenhuma partida registrada ainda.</td></tr>`;
+
+  renderShell(`
+    <div class="hero-stats">
+      <div class="hero-card"><div class="val">${stats.total}</div><div class="lbl">Partidas Registradas</div></div>
+      <div class="hero-card"><div class="val">${stats.escapes}</div><div class="lbl">Fugas Confirmadas</div></div>
+      <div class="hero-card"><div class="val">${stats.escapeRate.toFixed(0)}%</div><div class="lbl">Taxa de Fuga</div></div>
+      <div class="hero-card"><div class="val">${stats.avgEmblemPts.toFixed(0)}</div><div class="lbl">Média de Pontos/Partida</div></div>
+    </div>
+    <div class="panel">
+      <h2>Sua Devoção</h2>
+      ${stats.calibrating ? `<p class="empty-note">Calibrando: faltam ${10 - stats.eligibleCount} partidas escapadas e confirmadas para definir sua devoção inicial (parecido com as 10 primeiras de uma competitiva).</p>` : tierProgressHTML(stats.devotion)}
+    </div>
+    <div class="panel">
+      <h2>Histórico de Partidas</h2>
+      <table>
+        <thead><tr><th>Data</th><th>Mapa</th><th>Resultado</th><th>Insígnias</th><th>Pontos</th><th>Status</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>
+  `);
+}
+
+// ============ RENDER: RANKING ============
+function renderRanking(){
+  const rank = getRanking();
+  const rows = rank.length ? rank.map((s, i) => {
+    const tier = getTier(s.devotion);
+    const isIrid = tier.color === 'iridescent';
+    const rankClass = i===0?'rank-1':i===1?'rank-2':i===2?'rank-3':'';
+    return `<tr>
+      <td class="${rankClass}">#${i+1}</td>
+      <td>${s.name}${s.name===myName?' <span style="color:var(--muted);font-size:11px;">(você)</span>':''}</td>
+      <td><span class="tier-chip" style="${isIrid ? 'background:linear-gradient(120deg,#7ee0d1,#a78bfa,#f472b6,#7ee0d1);background-size:300% 100%;animation:iridShift 3s linear infinite;color:#0a080b;font-size:12px;padding:4px 10px;' : `background:${tier.color}22;color:${tier.color};border:1px solid ${tier.color}55;font-size:12px;padding:4px 10px;`}">${tier.name}</span></td>
+      <td class="mono">${s.devotion}</td>
+      <td>${s.total}</td>
+      <td>${s.escapeRate.toFixed(0)}%</td>
+    </tr>`;
+  }).join('') : `<tr><td colspan="6" class="empty-note">Ninguém tem partidas confirmadas ainda. Registre a sua!</td></tr>`;
+
+  renderShell(`
+    <div class="panel">
+      <h2>Ranking de Devoção <span class="sub">ordenado pelos pontos acumulados de insígnias em fugas confirmadas</span></h2>
+      <table>
+        <thead><tr><th>#</th><th>Sobrevivente</th><th>Patente</th><th>Devoção</th><th>Partidas</th><th>Taxa de Fuga</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>
+  `);
+}
+
+// ============ RENDER: DEVOÇÃO (INFO) ============
+function renderDevocaoInfo(){
+  const gradeRows = GRADE_KEYS.map(g => `
+    <tr><td>${emblemBadge(g)}</td><td class="mono">${GRADES[g].pts} pts</td></tr>
+  `).join('');
+  const tierRows = TIERS.map(t => {
+    const isIrid = t.color === 'iridescent';
+    return `<tr>
+      <td><span class="tier-chip" style="${isIrid ? 'background:linear-gradient(120deg,#7ee0d1,#a78bfa,#f472b6,#7ee0d1);background-size:300% 100%;animation:iridShift 3s linear infinite;color:#0a080b;font-size:12px;padding:4px 10px;' : `background:${t.color}22;color:${t.color};border:1px solid ${t.color}55;font-size:12px;padding:4px 10px;`}">${t.name}</span></td>
+      <td class="mono">${t.min}+ pts</td>
+    </tr>`;
+  }).join('');
+
+  renderShell(`
+    <div class="panel">
+      <h2>Como funciona a Devoção</h2>
+      <p class="empty-note">Cada partida escapada gera até 4 insígnias (Benevolente, Objetivo, Sobrevivência e Ousadia), cada uma com uma qualidade. A soma delas vira pontos, que definem sua devoção — só partidas com fuga confirmada contam.</p>
+      <div class="grid" style="margin-top:16px;">
+        <div>
+          <h2 style="font-size:14px;margin-bottom:10px;">Qualidade das Insígnias</h2>
+          <table><thead><tr><th>Insígnia</th><th>Pontos</th></tr></thead><tbody>${gradeRows}</tbody></table>
+        </div>
+      </div>
+      <div class="helper-note">
+        Assim como uma competitiva de FPS com 10 partidas de colocação, suas primeiras 10 partidas escapadas e confirmadas definem sua devoção inicial — a partir daí, cada partida nova soma ou reduz pontos conforme o desempenho das suas insígnias.
+      </div>
+    </div>
+    <div class="panel">
+      <h2>Patentes de Devoção</h2>
+      <table><thead><tr><th>Patente</th><th>Devoção Necessária</th></tr></thead><tbody>${tierRows}</tbody></table>
+    </div>
+  `);
+}
+
+// ============ RENDER PRINCIPAL ============
+function render(){
+  if(!myName){ renderNickGate(); return; }
+  if(activeTab === 'registrar') renderRegistrar();
+  else if(activeTab === 'perfil') renderPerfil();
+  else if(activeTab === 'ranking') renderRanking();
+  else renderDevocaoInfo();
+}
+
+// ============ INIT ============
+async function init(){
+  document.getElementById('app').innerHTML = `<div class="panel"><p class="empty-note">Entrando na névoa...</p></div>`;
+  players = await loadShared('brdbd:players', []);
+  matches = await loadShared('brdbd:matches', []);
+  matches.forEach(m => { if(!m.status) m.status = 'aprovada'; });
+  const savedName = await loadPersonal('brdbd:myname');
+  if(savedName) myName = savedName;
+  render();
+}
+init();
+</script>
+</body>
+</html>
