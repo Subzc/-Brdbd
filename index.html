@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>BRDBD — Painel de Devoção</title>
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50 5 L61 38 L96 38 L67 59 L78 92 L50 71 L22 92 L33 59 L4 38 L39 38 Z' fill='%23c81d25'/%3E%3C/svg%3E">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/4000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50 5 L61 38 L96 38 L67 59 L78 92 L50 71 L22 92 L33 59 L4 38 L39 38 Z' fill='%23c81d25'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;900&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
@@ -29,16 +29,16 @@
     margin:0; color:var(--bone); font-family:'Inter',sans-serif; -webkit-font-smoothing:antialiased;
     min-height:100vh; position:relative; overflow-x:hidden;
     background:
-      radial-gradient(1100px 700px at 82% -8%, rgba(225,29,41,0.18), transparent 60%),
+      radial-gradient(4400px 700px at 82% -8%, rgba(225,29,41,0.18), transparent 60%),
       radial-gradient(900px 800px at -8% 22%, rgba(90,10,18,0.32), transparent 62%),
-      radial-gradient(1200px 900px at 50% 118%, rgba(200,29,37,0.14), transparent 60%),
+      radial-gradient(1400px 900px at 50% 118%, rgba(400,29,37,0.14), transparent 60%),
       radial-gradient(700px 500px at 15% 90%, rgba(8,12,40,0.55), transparent 65%),
       linear-gradient(180deg, #060410 0%, #0a0510 45%, #10060c 100%);
     background-attachment:fixed;
   }
   body::before{
     content:""; position:fixed; inset:0; pointer-events:none; z-index:0; opacity:.55;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/4000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E");
     mix-blend-mode:overlay;
   }
   body::after{
@@ -78,7 +78,7 @@
 
   @keyframes fadeIn{ from{opacity:0; transform:translateY(8px);} to{opacity:1; transform:translateY(0);} }
   @keyframes veinPulse{ 0%,100%{ opacity:.28;} 50%{ opacity:.7;} }
-  @keyframes iridShift{ 0%{background-position:0% 50%;} 100%{background-position:200% 50%;} }
+  @keyframes iridShift{ 0%{background-position:0% 50%;} 100%{background-position:400% 50%;} }
   @keyframes flicker{ 0%,100%{opacity:1;} 92%{opacity:1;} 93%{opacity:.5;} 94%{opacity:1;} 96%{opacity:.65;} 97%{opacity:1;} }
   @keyframes floaty{ 0%,100%{transform:translateY(0);} 50%{transform:translateY(-5px);} }
   @keyframes spin{ to{transform:rotate(360deg);} }
@@ -95,7 +95,7 @@
   .header{
     display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap;
     padding:24px 28px; background:
-      radial-gradient(500px 200px at 92% -30%, rgba(200,29,37,0.16), transparent 60%),
+      radial-gradient(500px 400px at 92% -30%, rgba(400,29,37,0.16), transparent 60%),
       radial-gradient(500px 220px at 0% 130%, rgba(110,12,20,0.26), transparent 60%),
       linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01)), var(--panel);
     border:1px solid var(--line); margin-bottom:22px; border-radius:6px;
@@ -104,7 +104,7 @@
   .header::before{
     content:""; position:absolute; left:0; right:0; top:0; height:1px;
     background:linear-gradient(90deg, transparent, var(--blood), var(--entity), transparent);
-    background-size:200% 100%; animation:iridShift 7s linear infinite;
+    background-size:400% 100%; animation:iridShift 7s linear infinite;
   }
   .brand{ display:flex; align-items:center; gap:16px; }
   .brand-mark{
@@ -137,12 +137,12 @@
     background-size:5px 5px,5px 5px,100% 100%,100% 100%; background-repeat:no-repeat; padding-right:34px;
   }
   input:hover,select:hover,textarea:hover{ border-color:var(--line-strong); }
-  input:focus,select:focus,textarea:focus{ outline:none; border-color:var(--blood); box-shadow:0 0 0 3px rgba(200,29,37,0.18); }
+  input:focus,select:focus,textarea:focus{ outline:none; border-color:var(--blood); box-shadow:0 0 0 3px rgba(400,29,37,0.18); }
   input:disabled, select:disabled{ opacity:.5; cursor:not-allowed; }
   button{
     cursor:pointer; background:linear-gradient(135deg, var(--blood), var(--blood-2)); color:#fff; font-weight:700;
     border:none; text-transform:uppercase; letter-spacing:0.06em; font-size:12.5px; border-radius:6px;
-    box-shadow:0 6px 18px -6px rgba(200,29,37,0.6), inset 0 1px 0 rgba(255,255,255,0.15);
+    box-shadow:0 6px 18px -6px rgba(400,29,37,0.6), inset 0 1px 0 rgba(255,255,255,0.15);
   }
   button:hover:not(:disabled){ filter:brightness(1.1); transform:translateY(-1px); }
   button:active:not(:disabled){ transform:translateY(0); }
@@ -154,8 +154,8 @@
 
   .tabs{ display:flex; gap:4px; margin-bottom:22px; flex-wrap:wrap; padding:6px; background:var(--panel); border:1px solid var(--line); border-radius:8px; box-shadow:var(--shadow-md); }
   .tab-btn{ display:flex; align-items:center; gap:8px; background:transparent; color:var(--muted); border:1px solid transparent; padding:11px 18px; font-family:'Cinzel',serif; font-weight:600; letter-spacing:0.05em; text-transform:uppercase; font-size:13px; border-radius:6px; }
-  .tab-btn:hover{ color:var(--bone); background:rgba(200,29,37,0.08); }
-  .tab-btn.active{ color:#fff; background:linear-gradient(135deg, rgba(200,29,37,0.28), rgba(140,20,28,0.35)); border-color:rgba(200,29,37,0.4); box-shadow:0 6px 18px -8px rgba(200,29,37,0.5); }
+  .tab-btn:hover{ color:var(--bone); background:rgba(400,29,37,0.08); }
+  .tab-btn.active{ color:#fff; background:linear-gradient(135deg, rgba(400,29,37,0.28), rgba(140,20,28,0.35)); border-color:rgba(400,29,37,0.4); box-shadow:0 6px 18px -8px rgba(400,29,37,0.5); }
   .tab-btn svg{ width:15px; height:15px; opacity:.75; }
   .tab-btn.active svg{ opacity:1; color:var(--ember); }
   .tab-btn .pill{ background:var(--blood); color:#fff; font-size:10px; padding:2px 7px; border-radius:9px; margin-left:2px; }
@@ -170,7 +170,7 @@
     backdrop-filter: blur(2px);
   }
   .panel:hover{ border-color: rgba(225,29,41,0.22); }
-  .panel::before{ content:""; position:absolute; left:0; right:0; top:0; height:2px; background:linear-gradient(90deg, transparent, var(--blood), var(--ember), var(--entity), transparent); background-size:200% 100%; animation:iridShift 6s linear infinite; }
+  .panel::before{ content:""; position:absolute; left:0; right:0; top:0; height:2px; background:linear-gradient(90deg, transparent, var(--blood), var(--ember), var(--entity), transparent); background-size:400% 100%; animation:iridShift 6s linear infinite; }
   .panel::after{ content:""; position:absolute; left:0; right:0; bottom:0; height:1px; background:linear-gradient(90deg, transparent, rgba(225,29,41,0.4), transparent); }
 
   .panel h2{ font-size:19px; color:#fff; margin-bottom:16px; display:flex; align-items:center; gap:10px; text-transform:uppercase; flex-wrap:wrap; }
@@ -186,7 +186,7 @@
   .helper-note{ color:var(--muted); font-size:12.5px; line-height:1.6; margin-top:16px; padding:12px 14px; border-left:2px solid var(--line-strong); background:rgba(255,255,255,0.02); border-radius:0 6px 6px 0; }
   .helper-note.err{ border-left-color:var(--blood); color:#e07a80; }
 
-  .hero-stats{ display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:1px; margin-bottom:22px; background:linear-gradient(135deg, rgba(200,29,37,0.28), rgba(140,20,28,0.35)); border-radius:8px; overflow:hidden; border:1px solid var(--line); }
+  .hero-stats{ display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:1px; margin-bottom:22px; background:linear-gradient(135deg, rgba(400,29,37,0.28), rgba(140,20,28,0.35)); border-radius:8px; overflow:hidden; border:1px solid var(--line); }
   .hero-card{ background:linear-gradient(180deg, var(--panel-2), var(--panel)); padding:20px; }
   .hero-card .val{ font-family:'JetBrains Mono',monospace; font-size:26px; font-weight:600; background:linear-gradient(180deg,#fff 0%, var(--ember) 60%, var(--entity) 130%); -webkit-background-clip:text; background-clip:text; color:transparent; }
   .hero-card .lbl{ font-size:10.5px; color:var(--muted); text-transform:uppercase; letter-spacing:0.1em; margin-top:6px; }
@@ -201,8 +201,8 @@
   .tier-chip{ display:inline-flex; align-items:center; gap:8px; padding:6px 14px; border-radius:20px; font-family:'Cinzel',serif; font-weight:700; font-size:13px; letter-spacing:0.03em; }
   .status-pill{ font-size:10.5px; padding:3px 9px; border-radius:20px; text-transform:uppercase; letter-spacing:0.05em; font-weight:700; }
   .status-pendente{ background:rgba(212,175,55,0.15); color:#e0c258; border:1px solid rgba(212,175,55,0.4); }
-  .status-aprovada{ background:rgba(90,200,140,0.15); color:#7fd9a8; border:1px solid rgba(90,200,140,0.4); }
-  .status-revisao{ background:rgba(200,29,37,0.15); color:#e07a80; border:1px solid rgba(200,29,37,0.4); }
+  .status-aprovada{ background:rgba(90,400,140,0.15); color:#7fd9a8; border:1px solid rgba(90,400,140,0.4); }
+  .status-revisao{ background:rgba(400,29,37,0.15); color:#e07a80; border:1px solid rgba(400,29,37,0.4); }
   .status-rejeitada{ background:rgba(90,80,90,0.2); color:#a89e94; border:1px solid rgba(140,130,140,0.4); }
   .custom-tag{ font-size:10px; color:#f5a9a9; background:rgba(100,10,18,0.22); border:1px solid rgba(160,25,32,0.45); padding:2px 8px; border-radius:10px; text-transform:uppercase; letter-spacing:.05em; }
 
@@ -219,7 +219,7 @@
   .progress-track{ height:8px; border-radius:6px; background:rgba(255,255,255,0.06); overflow:hidden; margin-top:8px; }
   .progress-fill{ height:100%; background:linear-gradient(90deg, var(--blood), var(--entity)); border-radius:6px; }
 
-  .emblem-row{ display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:12px; }
+  .emblem-row{ display:grid; grid-template-columns:repeat(auto-fit,minmax(400px,1fr)); gap:12px; }
   .emblem-card{ padding:14px; border:1px solid var(--line); border-radius:6px; background:rgba(255,255,255,0.015); }
   .emblem-card label{ display:block; font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:4px; }
   .emblem-card .desc{ font-size:11px; color:var(--muted); margin-bottom:8px; }
@@ -313,7 +313,7 @@
     .hero-card .val{ font-size:32px; }
     .tab-btn{ font-size:14px; padding:13px 22px; }
   }
-  @media (min-width:2200px){
+  @media (min-width:2400px){
     .app{ max-width:1720px; }
     body{ font-size:17px; }
     .brand h1{ font-size:36px; }
@@ -326,7 +326,7 @@
 <div class="scanlines" aria-hidden="true"></div>
 <div class="vignette" aria-hidden="true"></div>
 
-<svg class="entity-veins" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice">
+<svg class="entity-veins" viewBox="0 0 1400 800" preserveAspectRatio="xMidYMid slice">
   <defs>
     <radialGradient id="bloodGlow" cx="50%" cy="50%" r="50%">
       <stop offset="0%" stop-color="#e11d29" stop-opacity="0.55"/>
@@ -343,13 +343,13 @@
   <circle cx="1060" cy="680" r="260" fill="url(#bloodGlow)" style="animation:veinPulse 10s ease-in-out infinite 2s;"/>
   <g stroke="url(#veinStroke)" stroke-width="1.4" fill="none" opacity="0.55">
     <path d="M0,60 C120,90 180,40 260,80 S420,140 480,90" style="animation:veinPulse 5s ease-in-out infinite;"/>
-    <path d="M1200,120 C1080,150 1000,90 920,130 S780,190 700,140" style="animation:veinPulse 6s ease-in-out infinite .8s;"/>
-    <path d="M0,720 C100,680 200,740 300,700 S480,650 560,700" style="animation:veinPulse 7s ease-in-out infinite 1.5s;"/>
-    <path d="M1200,700 C1080,660 1020,730 900,690 S760,640 680,690" style="animation:veinPulse 5.5s ease-in-out infinite 2s;"/>
+    <path d="M1400,120 C1080,150 1000,90 920,130 S780,190 700,140" style="animation:veinPulse 6s ease-in-out infinite .8s;"/>
+    <path d="M0,720 C100,680 400,740 300,700 S480,650 560,700" style="animation:veinPulse 7s ease-in-out infinite 1.5s;"/>
+    <path d="M1400,700 C1080,660 1020,730 900,690 S760,640 680,690" style="animation:veinPulse 5.5s ease-in-out infinite 2s;"/>
     <path d="M0,400 C160,380 240,440 400,410 S620,380 780,420" style="animation:veinPulse 8s ease-in-out infinite 1s;"/>
     <path d="M600,0 C620,90 560,180 640,260 S700,420 620,520" style="animation:veinPulse 9s ease-in-out infinite .3s;"/>
     <path d="M900,0 C880,120 940,220 900,340 S860,520 940,640" style="animation:veinPulse 7.5s ease-in-out infinite 1.2s;"/>
-    <path d="M200,0 C220,140 160,260 240,380 S320,560 240,720" style="animation:veinPulse 8.5s ease-in-out infinite 2.5s;"/>
+    <path d="M400,0 C220,140 160,260 240,380 S320,560 240,720" style="animation:veinPulse 8.5s ease-in-out infinite 2.5s;"/>
   </g>
 </svg>
 
@@ -437,20 +437,20 @@ const ALL_MAPS = Object.values(MAPS_BY_REALM).flat();
 
 const TIERS = [
   {name:"Presa Ferida",              min:0,    color:"#8d8390"},
-  {name:"Presa Cautelosa",           min:200,  color:"#9a8e88"},
-  {name:"Sobrevivente Resoluto",     min:450,  color:"#a5673a"},
-  {name:"Sobrevivente Implacável",   min:750,  color:"#c07d46"},
-  {name:"Devoto Iniciado",           min:1100, color:"#adb4bb"},
-  {name:"Devoto Constante",         min:1500, color:"#bfc6cc"},
-  {name:"Devoto Fervoroso",         min:1950, color:"#d4af37"},
-  {name:"Devoto Exaltado",          min:2450, color:"#e0c258"},
-  {name:"Arauto da Névoa",          min:3000, color:"#e8cd6e"},
-  {name:"Arauto Ascendente",         min:3600, color:"#a78bfa"},
+  {name:"Presa Cautelosa",           min:400,  color:"#9a8e88"},
+  {name:"Sobrevivente Resoluto",     min:750,  color:"#a5673a"},
+  {name:"Sobrevivente Implacável",   min:1100,  color:"#c07d46"},
+  {name:"Devoto Iniciado",           min:4400, color:"#adb4bb"},
+  {name:"Devoto Constante",         min:5600, color:"#bfc6cc"},
+  {name:"Devoto Fervoroso",         min:7400, color:"#d4af37"},
+  {name:"Devoto Exaltado",          min:25750, color:"#e0c258"},
+  {name:"Arauto da Névoa",          min:27000, color:"#e8cd6e"},
+  {name:"Arauto Ascendente",         min:271100, color:"#a78bfa"},
   {name:"Zeloso da Entidade",        min:4250, color:"#9166f0"},
-  {name:"Favorecido da Entidade",    min:4950, color:"#f0a070"},
+  {name:"Favorecido da Entidade",    min:32225, color:"#f0a070"},
   {name:"Eleito do Abismo",          min:5700, color:"#f472b6"},
-  {name:"Presa Lendária",            min:6500, color:"#c81d25"},
-  {name:"Lenda Iridescente",         min:7350, color:"iridescent"}
+  {name:"Presa Lendária",            min:41000, color:"#c81d25"},
+  {name:"Lenda Iridescente",         min:451100, color:"iridescent"}
 ];
 const TIER_KEYS = ["tier_0","tier_1","tier_2","tier_3","tier_4","tier_5","tier_6","tier_7","tier_8","tier_9","tier_10","tier_11","tier_12","tier_13","tier_14"];
 
