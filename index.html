@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>BRDBD — Painel de Devoção</title>
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/8000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50 5 L61 38 L96 38 L67 59 L78 92 L50 71 L22 92 L33 59 L4 38 L39 38 Z' fill='%23c81d25'/%3E%3C/svg%3E">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50 5 L61 38 L96 38 L67 59 L78 92 L50 71 L22 92 L33 59 L4 38 L39 38 Z' fill='%23c81d25'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;900&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
@@ -12,14 +12,16 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <style>
   :root{
-    --void:#08070a; --void-2:#0c0a0e;
-    --panel:#141116; --panel-2:#1b1620; --panel-3:#241c28;
-    --line: rgba(800,150,150,0.09); --line-strong: rgba(800,150,150,0.22);
-    --bone:#e9dfd0; --bone-dim:#a89e94; --muted:#8d8390;
-    --blood:#c81d25; --blood-2:#7a1015; --ember:#e0703a;
+    --void:#04030a; --void-2:#07050d;
+    --panel:#120d17; --panel-2:#1a121e; --panel-3:#241827;
+    --line: rgba(220,160,160,0.10); --line-strong: rgba(220,160,160,0.24);
+    --bone:#f2e6d5; --bone-dim:#b0a498; --muted:#8d8390;
+    --blood:#e11d29; --blood-2:#7a1015; --blood-3:#3b060a; --ember:#ff6a2c;
     --entity: #5a0a10; --entity-2:#2a0508;
+    --midnight:#050a1a; --midnight-2:#0a0714;
     --bronze:#a5673a; --prata:#adb4bb; --ouro:#d4af37;
-    --shadow-md: 0 14px 40px -14px rgba(0,0,0,0.85), 0 2px 10px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.03);
+    --shadow-md: 0 14px 40px -14px rgba(0,0,0,0.9), 0 2px 10px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.03);
+    --glow-blood: 0 0 24px rgba(225,29,41,0.35), 0 0 60px rgba(225,29,41,0.18);
   }
   *{box-sizing:border-box;}
   html,body{min-height:100%;}
@@ -27,34 +29,73 @@
     margin:0; color:var(--bone); font-family:'Inter',sans-serif; -webkit-font-smoothing:antialiased;
     min-height:100vh; position:relative; overflow-x:hidden;
     background:
-      radial-gradient(900px 600px at 85% -10%, rgba(800,29,37,0.14), transparent 60%),
-      radial-gradient(800px 700px at -10% 20%, rgba(100,10,18,0.24), transparent 60%),
-      radial-gradient(1000px 800px at 50% 115%, rgba(800,29,37,0.10), transparent 60%),
-      linear-gradient(180deg, #0a080b 0%, #08070a 55%, #0b0810 100%);
+      radial-gradient(1100px 700px at 82% -8%, rgba(225,29,41,0.18), transparent 60%),
+      radial-gradient(900px 800px at -8% 22%, rgba(90,10,18,0.32), transparent 62%),
+      radial-gradient(1200px 900px at 50% 118%, rgba(200,29,37,0.14), transparent 60%),
+      radial-gradient(700px 500px at 15% 90%, rgba(8,12,40,0.55), transparent 65%),
+      linear-gradient(180deg, #060410 0%, #0a0510 45%, #10060c 100%);
     background-attachment:fixed;
   }
   body::before{
-    content:""; position:fixed; inset:0; pointer-events:none; z-index:0; opacity:.5;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/8000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
+    content:""; position:fixed; inset:0; pointer-events:none; z-index:0; opacity:.55;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E");
+    mix-blend-mode:overlay;
   }
-  .entity-veins{ position:fixed; inset:0; pointer-events:none; z-index:0; opacity:.4; mix-blend-mode:screen; }
+  body::after{
+    content:""; position:fixed; inset:-10%; pointer-events:none; z-index:0; opacity:.4;
+    background-image:
+      radial-gradient(2px 2px at 20% 30%, rgba(255,140,90,0.9), transparent 60%),
+      radial-gradient(2px 2px at 70% 60%, rgba(255,100,70,0.75), transparent 60%),
+      radial-gradient(2px 2px at 40% 80%, rgba(255,150,100,0.8), transparent 60%),
+      radial-gradient(2px 2px at 85% 20%, rgba(255,90,60,0.7), transparent 60%),
+      radial-gradient(2px 2px at 10% 65%, rgba(255,120,70,0.8), transparent 60%),
+      radial-gradient(2px 2px at 55% 15%, rgba(255,110,70,0.7), transparent 60%),
+      radial-gradient(1.5px 1.5px at 33% 50%, rgba(255,90,60,0.7), transparent 60%),
+      radial-gradient(1.5px 1.5px at 90% 85%, rgba(255,130,80,0.75), transparent 60%);
+    background-size: 600px 600px;
+    animation: emberDrift 26s linear infinite;
+    filter: blur(0.4px);
+  }
+  .fog-layer{ position:fixed; inset:-20%; pointer-events:none; z-index:0; opacity:.55; mix-blend-mode:screen;
+    background:
+      radial-gradient(60% 40% at 30% 30%, rgba(120,10,20,0.22), transparent 60%),
+      radial-gradient(50% 40% at 70% 60%, rgba(10,15,45,0.35), transparent 60%),
+      radial-gradient(45% 35% at 50% 90%, rgba(180,20,30,0.18), transparent 60%);
+    filter: blur(30px);
+    animation: fogDrift 30s ease-in-out infinite alternate;
+  }
+  .entity-veins{ position:fixed; inset:0; pointer-events:none; z-index:0; opacity:.5; mix-blend-mode:screen; }
+  .vignette{ position:fixed; inset:0; pointer-events:none; z-index:0;
+    background: radial-gradient(120% 90% at 50% 50%, transparent 55%, rgba(0,0,0,0.6) 100%);
+  }
+  .scanlines{ position:fixed; inset:0; pointer-events:none; z-index:0; opacity:.05;
+    background-image: repeating-linear-gradient(180deg, rgba(255,255,255,0.6) 0 1px, transparent 1px 3px);
+    mix-blend-mode:overlay;
+  }
   h1,h2,h3,.display{ font-family:'Cinzel',serif; letter-spacing:0.02em; margin:0; }
   .mono{ font-family:'JetBrains Mono',monospace; }
   ::selection{ background:var(--blood); color:#0a080b; }
 
   @keyframes fadeIn{ from{opacity:0; transform:translateY(8px);} to{opacity:1; transform:translateY(0);} }
-  @keyframes veinPulse{ 0%,100%{ opacity:.28;} 50%{ opacity:.55;} }
-  @keyframes iridShift{ 0%{background-position:0% 50%;} 100%{background-position:800% 50%;} }
-  @keyframes flicker{ 0%,100%{opacity:1;} 92%{opacity:1;} 93%{opacity:.55;} 94%{opacity:1;} 96%{opacity:.7;} 97%{opacity:1;} }
-  @keyframes floaty{ 0%,100%{transform:translateY(0);} 50%{transform:translateY(-4px);} }
+  @keyframes veinPulse{ 0%,100%{ opacity:.28;} 50%{ opacity:.7;} }
+  @keyframes iridShift{ 0%{background-position:0% 50%;} 100%{background-position:200% 50%;} }
+  @keyframes flicker{ 0%,100%{opacity:1;} 92%{opacity:1;} 93%{opacity:.5;} 94%{opacity:1;} 96%{opacity:.65;} 97%{opacity:1;} }
+  @keyframes floaty{ 0%,100%{transform:translateY(0);} 50%{transform:translateY(-5px);} }
   @keyframes spin{ to{transform:rotate(360deg);} }
+  @keyframes emberDrift{ 0%{transform:translate3d(0,0,0);} 100%{transform:translate3d(-40px,-140px,0);} }
+  @keyframes fogDrift{ 0%{transform:translate3d(-3%,-2%,0) scale(1.05);} 100%{transform:translate3d(3%,2%,0) scale(1.15);} }
+  @keyframes heartbeat{ 0%,100%{transform:scale(1); filter:drop-shadow(0 6px 16px rgba(225,29,41,.55));} 25%{transform:scale(1.06); filter:drop-shadow(0 6px 26px rgba(225,29,41,.9));} 50%{transform:scale(0.98);} 75%{transform:scale(1.04);} }
+  @media (prefers-reduced-motion: reduce){
+    body::after,.fog-layer,.entity-veins g path,.brand-mark{ animation:none !important; }
+  }
+
 
   .app{ position:relative; z-index:1; max-width:1180px; margin:0 auto; padding:30px 20px 90px; }
 
   .header{
     display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap;
     padding:24px 28px; background:
-      radial-gradient(500px 800px at 92% -30%, rgba(800,29,37,0.16), transparent 60%),
+      radial-gradient(500px 200px at 92% -30%, rgba(200,29,37,0.16), transparent 60%),
       radial-gradient(500px 220px at 0% 130%, rgba(110,12,20,0.26), transparent 60%),
       linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01)), var(--panel);
     border:1px solid var(--line); margin-bottom:22px; border-radius:6px;
@@ -63,17 +104,22 @@
   .header::before{
     content:""; position:absolute; left:0; right:0; top:0; height:1px;
     background:linear-gradient(90deg, transparent, var(--blood), var(--entity), transparent);
-    background-size:800% 100%; animation:iridShift 7s linear infinite;
+    background-size:200% 100%; animation:iridShift 7s linear infinite;
   }
   .brand{ display:flex; align-items:center; gap:16px; }
   .brand-mark{
     width:46px; height:46px; flex-shrink:0;
-    background: linear-gradient(135deg, var(--blood), var(--blood-2));
+    background: conic-gradient(from 220deg, var(--ember), var(--blood), var(--blood-2), var(--entity), var(--blood));
     clip-path: polygon(50% 0%, 61% 38%, 96% 38%, 67% 59%, 78% 92%, 50% 71%, 22% 92%, 33% 59%, 4% 38%, 39% 38%);
-    animation: floaty 5s ease-in-out infinite, flicker 6s ease-in-out infinite;
-    filter: drop-shadow(0 6px 16px rgba(800,29,37,0.55));
+    animation: heartbeat 2.4s ease-in-out infinite, flicker 6s ease-in-out infinite;
+    filter: drop-shadow(0 6px 18px rgba(225,29,41,0.7));
   }
-  .brand h1{ font-size:25px; color:#fff; text-transform:uppercase; }
+  .brand h1{ font-size:25px; color:#fff; text-transform:uppercase;
+    background:linear-gradient(180deg,#fff 30%, var(--ember) 75%, var(--blood) 130%);
+    -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;
+    text-shadow: 0 0 24px rgba(225,29,41,0.35);
+  }
+
   .brand p{ margin:5px 0 0; font-size:11px; color:var(--muted); letter-spacing:0.18em; text-transform:uppercase; }
   .header-controls{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
   .who{ font-size:12.5px; color:var(--muted); }
@@ -91,12 +137,12 @@
     background-size:5px 5px,5px 5px,100% 100%,100% 100%; background-repeat:no-repeat; padding-right:34px;
   }
   input:hover,select:hover,textarea:hover{ border-color:var(--line-strong); }
-  input:focus,select:focus,textarea:focus{ outline:none; border-color:var(--blood); box-shadow:0 0 0 3px rgba(800,29,37,0.18); }
+  input:focus,select:focus,textarea:focus{ outline:none; border-color:var(--blood); box-shadow:0 0 0 3px rgba(200,29,37,0.18); }
   input:disabled, select:disabled{ opacity:.5; cursor:not-allowed; }
   button{
     cursor:pointer; background:linear-gradient(135deg, var(--blood), var(--blood-2)); color:#fff; font-weight:700;
     border:none; text-transform:uppercase; letter-spacing:0.06em; font-size:12.5px; border-radius:6px;
-    box-shadow:0 6px 18px -6px rgba(800,29,37,0.6), inset 0 1px 0 rgba(255,255,255,0.15);
+    box-shadow:0 6px 18px -6px rgba(200,29,37,0.6), inset 0 1px 0 rgba(255,255,255,0.15);
   }
   button:hover:not(:disabled){ filter:brightness(1.1); transform:translateY(-1px); }
   button:active:not(:disabled){ transform:translateY(0); }
@@ -108,20 +154,25 @@
 
   .tabs{ display:flex; gap:4px; margin-bottom:22px; flex-wrap:wrap; padding:6px; background:var(--panel); border:1px solid var(--line); border-radius:8px; box-shadow:var(--shadow-md); }
   .tab-btn{ display:flex; align-items:center; gap:8px; background:transparent; color:var(--muted); border:1px solid transparent; padding:11px 18px; font-family:'Cinzel',serif; font-weight:600; letter-spacing:0.05em; text-transform:uppercase; font-size:13px; border-radius:6px; }
-  .tab-btn:hover{ color:var(--bone); background:rgba(800,29,37,0.08); }
-  .tab-btn.active{ color:#fff; background:linear-gradient(135deg, rgba(800,29,37,0.28), rgba(140,20,28,0.35)); border-color:rgba(800,29,37,0.4); box-shadow:0 6px 18px -8px rgba(800,29,37,0.5); }
+  .tab-btn:hover{ color:var(--bone); background:rgba(200,29,37,0.08); }
+  .tab-btn.active{ color:#fff; background:linear-gradient(135deg, rgba(200,29,37,0.28), rgba(140,20,28,0.35)); border-color:rgba(200,29,37,0.4); box-shadow:0 6px 18px -8px rgba(200,29,37,0.5); }
   .tab-btn svg{ width:15px; height:15px; opacity:.75; }
   .tab-btn.active svg{ opacity:1; color:var(--ember); }
   .tab-btn .pill{ background:var(--blood); color:#fff; font-size:10px; padding:2px 7px; border-radius:9px; margin-left:2px; }
 
   .panel{
     position:relative; background:
-      radial-gradient(600px 300px at 100% 0%, rgba(90,8,15,0.18), transparent 55%),
-      linear-gradient(180deg, rgba(255,255,255,0.015), rgba(255,255,255,0)), var(--panel);
-    border:1px solid var(--line); padding:26px; margin-bottom:20px; border-radius:6px;
-    box-shadow:var(--shadow-md); animation:fadeIn .4s ease;
+      radial-gradient(700px 340px at 100% 0%, rgba(140,10,20,0.22), transparent 55%),
+      radial-gradient(500px 300px at 0% 100%, rgba(10,15,45,0.28), transparent 60%),
+      linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0)), var(--panel);
+    border:1px solid var(--line); padding:26px; margin-bottom:20px; border-radius:10px;
+    box-shadow:var(--shadow-md), 0 0 0 1px rgba(225,29,41,0.04); animation:fadeIn .4s ease;
+    backdrop-filter: blur(2px);
   }
-  .panel::before{ content:""; position:absolute; left:0; right:0; top:0; height:2px; background:linear-gradient(90deg, transparent, var(--blood), var(--entity), transparent); background-size:800% 100%; animation:iridShift 6s linear infinite; }
+  .panel:hover{ border-color: rgba(225,29,41,0.22); }
+  .panel::before{ content:""; position:absolute; left:0; right:0; top:0; height:2px; background:linear-gradient(90deg, transparent, var(--blood), var(--ember), var(--entity), transparent); background-size:200% 100%; animation:iridShift 6s linear infinite; }
+  .panel::after{ content:""; position:absolute; left:0; right:0; bottom:0; height:1px; background:linear-gradient(90deg, transparent, rgba(225,29,41,0.4), transparent); }
+
   .panel h2{ font-size:19px; color:#fff; margin-bottom:16px; display:flex; align-items:center; gap:10px; text-transform:uppercase; flex-wrap:wrap; }
   .panel h2 .sub{ color:var(--muted); font-size:12px; text-transform:none; letter-spacing:0; font-family:'Inter'; font-weight:400; }
 
@@ -135,7 +186,7 @@
   .helper-note{ color:var(--muted); font-size:12.5px; line-height:1.6; margin-top:16px; padding:12px 14px; border-left:2px solid var(--line-strong); background:rgba(255,255,255,0.02); border-radius:0 6px 6px 0; }
   .helper-note.err{ border-left-color:var(--blood); color:#e07a80; }
 
-  .hero-stats{ display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:1px; margin-bottom:22px; background:linear-gradient(135deg, rgba(800,29,37,0.28), rgba(140,20,28,0.35)); border-radius:8px; overflow:hidden; border:1px solid var(--line); }
+  .hero-stats{ display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:1px; margin-bottom:22px; background:linear-gradient(135deg, rgba(200,29,37,0.28), rgba(140,20,28,0.35)); border-radius:8px; overflow:hidden; border:1px solid var(--line); }
   .hero-card{ background:linear-gradient(180deg, var(--panel-2), var(--panel)); padding:20px; }
   .hero-card .val{ font-family:'JetBrains Mono',monospace; font-size:26px; font-weight:600; background:linear-gradient(180deg,#fff 0%, var(--ember) 60%, var(--entity) 130%); -webkit-background-clip:text; background-clip:text; color:transparent; }
   .hero-card .lbl{ font-size:10.5px; color:var(--muted); text-transform:uppercase; letter-spacing:0.1em; margin-top:6px; }
@@ -150,8 +201,8 @@
   .tier-chip{ display:inline-flex; align-items:center; gap:8px; padding:6px 14px; border-radius:20px; font-family:'Cinzel',serif; font-weight:700; font-size:13px; letter-spacing:0.03em; }
   .status-pill{ font-size:10.5px; padding:3px 9px; border-radius:20px; text-transform:uppercase; letter-spacing:0.05em; font-weight:700; }
   .status-pendente{ background:rgba(212,175,55,0.15); color:#e0c258; border:1px solid rgba(212,175,55,0.4); }
-  .status-aprovada{ background:rgba(90,800,140,0.15); color:#7fd9a8; border:1px solid rgba(90,800,140,0.4); }
-  .status-revisao{ background:rgba(800,29,37,0.15); color:#e07a80; border:1px solid rgba(800,29,37,0.4); }
+  .status-aprovada{ background:rgba(90,200,140,0.15); color:#7fd9a8; border:1px solid rgba(90,200,140,0.4); }
+  .status-revisao{ background:rgba(200,29,37,0.15); color:#e07a80; border:1px solid rgba(200,29,37,0.4); }
   .status-rejeitada{ background:rgba(90,80,90,0.2); color:#a89e94; border:1px solid rgba(140,130,140,0.4); }
   .custom-tag{ font-size:10px; color:#f5a9a9; background:rgba(100,10,18,0.22); border:1px solid rgba(160,25,32,0.45); padding:2px 8px; border-radius:10px; text-transform:uppercase; letter-spacing:.05em; }
 
@@ -168,7 +219,7 @@
   .progress-track{ height:8px; border-radius:6px; background:rgba(255,255,255,0.06); overflow:hidden; margin-top:8px; }
   .progress-fill{ height:100%; background:linear-gradient(90deg, var(--blood), var(--entity)); border-radius:6px; }
 
-  .emblem-row{ display:grid; grid-template-columns:repeat(auto-fit,minmax(800px,1fr)); gap:12px; }
+  .emblem-row{ display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:12px; }
   .emblem-card{ padding:14px; border:1px solid var(--line); border-radius:6px; background:rgba(255,255,255,0.015); }
   .emblem-card label{ display:block; font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:4px; }
   .emblem-card .desc{ font-size:11px; color:var(--muted); margin-bottom:8px; }
@@ -189,18 +240,119 @@
 
   .spinner{ display:inline-block; width:12px; height:12px; border:2px solid rgba(255,255,255,0.25); border-top-color:#fff; border-radius:50%; animation:spin .7s linear infinite; margin-right:6px; vertical-align:-2px; }
 
-  @media (max-width:640px){ .header{ padding:18px; } .brand h1{ font-size:20px; } .app{ padding:20px 12px 70px; } th:nth-child(3), td:nth-child(3){ display:none; } }
+  .lang-select{ min-width:0; width:auto; padding:8px 30px 8px 10px; font-size:12.5px; }
+
+  .bottom-nav{ display:none; }
+
+  /* ===== MOBILE / RESPONSIVE ===== */
+  @media (max-width:860px){
+    .app{ padding:16px 12px 90px; }
+    .header{ padding:16px 18px; gap:10px; border-radius:8px; }
+    .brand{ gap:10px; }
+    .brand-mark{ width:38px; height:38px; }
+    .brand h1{ font-size:19px; }
+    .brand p{ font-size:9.5px; letter-spacing:0.12em; }
+    .header-controls{ width:100%; justify-content:space-between; }
+    .who{ font-size:11.5px; }
+
+    /* tabs bar hidden on mobile, replaced by a fixed bottom nav for app-like navigation */
+    .tabs{ display:none; }
+    .bottom-nav{
+      display:flex; position:fixed; left:0; right:0; bottom:0; z-index:40;
+      background:linear-gradient(180deg, rgba(20,17,22,0.85), rgba(10,8,11,0.98));
+      backdrop-filter:blur(10px); border-top:1px solid var(--line-strong);
+      padding:6px 4px calc(6px + env(safe-area-inset-bottom));
+      box-shadow:0 -10px 30px -10px rgba(0,0,0,0.7);
+    }
+    .bottom-nav button{
+      flex:1; display:flex; flex-direction:column; align-items:center; gap:3px;
+      background:transparent; box-shadow:none; color:var(--muted); border:none; border-radius:8px;
+      padding:7px 2px; font-size:9.5px; font-weight:600; letter-spacing:0.02em; text-transform:uppercase;
+      font-family:'Inter',sans-serif; position:relative;
+    }
+    .bottom-nav button svg{ width:19px; height:19px; }
+    .bottom-nav button.active{ color:#fff; }
+    .bottom-nav button.active svg{ color:var(--ember); filter:drop-shadow(0 0 6px rgba(224,112,58,0.6)); }
+    .bottom-nav button .pill{ position:absolute; top:2px; right:14%; background:var(--blood); color:#fff; font-size:9px; padding:1px 5px; border-radius:8px; }
+
+    .panel{ padding:16px; border-radius:8px; }
+    .panel h2{ font-size:16px; }
+    .grid{ grid-template-columns:1fr; }
+    .emblem-row{ grid-template-columns:1fr; }
+    .hero-stats{ grid-template-columns:repeat(2,1fr); }
+    .hero-card{ padding:14px; }
+    .hero-card .val{ font-size:21px; }
+
+    button{ padding:12px 16px; font-size:13px; }
+    button.small{ padding:9px 13px; font-size:12px; }
+    select,input,textarea{ font-size:16px; padding:11px 13px; } /* 16px avoids iOS zoom-on-focus */
+
+    /* tables become stacked cards on narrow screens */
+    table.responsive, table.responsive thead, table.responsive tbody, table.responsive th, table.responsive td, table.responsive tr{ display:block; }
+    table.responsive thead{ display:none; }
+    table.responsive tr{ border:1px solid var(--line); border-radius:8px; padding:10px 12px; margin-bottom:10px; background:rgba(255,255,255,0.015); }
+    table.responsive tr:hover{ background:rgba(255,255,255,0.015); }
+    table.responsive td{ border-bottom:none; padding:6px 0; display:flex; justify-content:space-between; align-items:center; gap:10px; text-align:right; }
+    table.responsive td::before{ content:attr(data-label); color:var(--muted); font-size:10.5px; text-transform:uppercase; letter-spacing:0.06em; text-align:left; flex-shrink:0; }
+    table.responsive td[data-label=""]{ display:block; text-align:left; }
+    table.responsive td[data-label=""]::before{ content:none; }
+
+    .mod-card{ flex-direction:column; }
+    .mod-proof{ width:100%; height:150px; }
+    .mod-actions{ flex-direction:row; align-items:stretch; width:100%; }
+    .mod-actions button{ flex:1; }
+  }
+  @media (max-width:400px){ .hero-stats{ grid-template-columns:1fr 1fr; } .brand p{ display:none; } }
+
+  /* ===== LARGE SCREENS / TV ===== */
+  @media (min-width:1600px){
+    .app{ max-width:1440px; padding:44px 32px 100px; }
+    .brand h1{ font-size:30px; }
+    .panel{ padding:32px; }
+    .panel h2{ font-size:22px; }
+    .hero-card .val{ font-size:32px; }
+    .tab-btn{ font-size:14px; padding:13px 22px; }
+  }
+  @media (min-width:2200px){
+    .app{ max-width:1720px; }
+    body{ font-size:17px; }
+    .brand h1{ font-size:36px; }
+    .hero-card .val{ font-size:40px; }
+  }
 </style>
 </head>
 <body>
-<svg class="entity-veins" viewBox="0 0 1800 800" preserveAspectRatio="xMidYMid slice">
-  <g stroke="#c81d25" stroke-width="1.4" fill="none" opacity="0.5">
+<div class="fog-layer" aria-hidden="true"></div>
+<div class="scanlines" aria-hidden="true"></div>
+<div class="vignette" aria-hidden="true"></div>
+
+<svg class="entity-veins" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <radialGradient id="bloodGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#e11d29" stop-opacity="0.55"/>
+      <stop offset="70%" stop-color="#5a0a10" stop-opacity="0.1"/>
+      <stop offset="100%" stop-color="#000" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="veinStroke" x1="0" x2="1">
+      <stop offset="0%" stop-color="#7a1015" stop-opacity="0.2"/>
+      <stop offset="50%" stop-color="#e11d29" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#7a1015" stop-opacity="0.2"/>
+    </linearGradient>
+  </defs>
+  <circle cx="140" cy="140" r="220" fill="url(#bloodGlow)" style="animation:veinPulse 8s ease-in-out infinite;"/>
+  <circle cx="1060" cy="680" r="260" fill="url(#bloodGlow)" style="animation:veinPulse 10s ease-in-out infinite 2s;"/>
+  <g stroke="url(#veinStroke)" stroke-width="1.4" fill="none" opacity="0.55">
     <path d="M0,60 C120,90 180,40 260,80 S420,140 480,90" style="animation:veinPulse 5s ease-in-out infinite;"/>
-    <path d="M1800,120 C1080,150 1000,90 920,130 S780,190 700,140" style="animation:veinPulse 6s ease-in-out infinite .8s;"/>
-    <path d="M0,720 C100,680 800,740 300,700 S480,650 560,700" style="animation:veinPulse 7s ease-in-out infinite 1.5s;"/>
-    <path d="M1800,700 C1080,660 1020,730 900,690 S760,640 680,690" style="animation:veinPulse 5.5s ease-in-out infinite 2s;"/>
+    <path d="M1200,120 C1080,150 1000,90 920,130 S780,190 700,140" style="animation:veinPulse 6s ease-in-out infinite .8s;"/>
+    <path d="M0,720 C100,680 200,740 300,700 S480,650 560,700" style="animation:veinPulse 7s ease-in-out infinite 1.5s;"/>
+    <path d="M1200,700 C1080,660 1020,730 900,690 S760,640 680,690" style="animation:veinPulse 5.5s ease-in-out infinite 2s;"/>
+    <path d="M0,400 C160,380 240,440 400,410 S620,380 780,420" style="animation:veinPulse 8s ease-in-out infinite 1s;"/>
+    <path d="M600,0 C620,90 560,180 640,260 S700,420 620,520" style="animation:veinPulse 9s ease-in-out infinite .3s;"/>
+    <path d="M900,0 C880,120 940,220 900,340 S860,520 940,640" style="animation:veinPulse 7.5s ease-in-out infinite 1.2s;"/>
+    <path d="M200,0 C220,140 160,260 240,380 S320,560 240,720" style="animation:veinPulse 8.5s ease-in-out infinite 2.5s;"/>
   </g>
 </svg>
+
 <div class="app" id="app"><div class="empty-note">Entrando na névoa...</div></div>
 
 <script>
@@ -232,34 +384,32 @@ try{
 
 // ============ DADOS BASE ============
 const CATEGORIES_SURV = [
-  {key:'benevolent', label:'Benevolente', desc:'Curas, resgates e proteção a outros sobreviventes'},
-  {key:'objective',  label:'Objetivo',    desc:'Geradores, totens e abrir os portões'},
-  {key:'survival',   label:'Sobrevivência', desc:'Se manter vivo e escapar da Entidade'},
-  {key:'boldness',   label:'Ousadia',     desc:'Perseguições, escapes por pouco e distrações'}
+  {key:'benevolent'}, {key:'objective'}, {key:'survival'}, {key:'boldness'}
 ];
 const CATEGORIES_KILLER = [
-  {key:'devout',     label:'Devoto',      desc:'Sacrifícios entregues à Entidade'},
-  {key:'gatekeeper', label:'Guardião',    desc:'Atrasar e impedir geradores'},
-  {key:'malicious',  label:'Malicioso',   desc:'Acertos e derrubadas'},
-  {key:'chaser',     label:'Perseguidor', desc:'Perseguições e pressão nos loops'}
+  {key:'devout'}, {key:'gatekeeper'}, {key:'malicious'}, {key:'chaser'}
 ];
 function categoriesFor(role){ return role === 'killer' ? CATEGORIES_KILLER : CATEGORIES_SURV; }
+function catLabel(c){ return t('cat_' + c.key + '_label'); }
+function catDesc(c){ return t('cat_' + c.key + '_desc'); }
 
 const GRADES = {
-  nenhum:      {label:'Nenhum',      pts:0},
-  bronze:      {label:'Bronze',      pts:45},
-  prata:       {label:'Prata',       pts:90},
-  ouro:        {label:'Ouro',        pts:180},
-  iridescente: {label:'Iridescente', pts:270}
+  nenhum:      {pts:0},
+  bronze:      {pts:45},
+  prata:       {pts:90},
+  ouro:        {pts:180},
+  iridescente: {pts:270}
 };
 const GRADE_KEYS = ['nenhum','bronze','prata','ouro','iridescente'];
+function gradeLabel(g){ return t('grade_' + g); }
 
 const MODES = {
-  competitivo: {label:'Competitivo (4v1)', hasEmblems:true},
-  '2v8':       {label:'2v8',               hasEmblems:true},
-  '1v1':       {label:'1v1 (Duelo)',       hasEmblems:false}
+  competitivo: {hasEmblems:true},
+  '2v8':       {hasEmblems:true},
+  '1v1':       {hasEmblems:false}
 };
 const MODE_KEYS = Object.keys(MODES);
+function modeLabel(k){ return t('mode_' + (k === '2v8' ? '2v8' : k)); }
 
 const MAPS_BY_REALM = {
   "MacMillan Estate": ["Coal Tower","Shelter Woods","Suffocation Pit","Ironworks of Misery","Gas Heaven"],
@@ -286,22 +436,23 @@ const MAPS_BY_REALM = {
 const ALL_MAPS = Object.values(MAPS_BY_REALM).flat();
 
 const TIERS = [
-  {name:"Sobrevivente Ferido",       min:0,    color:"#8d8390"},
-  {name:"Sobrevivente Cauteloso",    min:800,  color:"#9a8e88"},
-  {name:"Sobrevivente Resiliente",   min:1000,  color:"#a5673a"},
-  {name:"Sobrevivente Veterano",     min:1100,  color:"#c07d46"},
-  {name:"Devoto I",                  min:1600, color:"#adb4bb"},
-  {name:"Devoto II",                 min:1800, color:"#bfc6cc"},
-  {name:"Devoto III",                min:2700, color:"#d4af37"},
-  {name:"Devoto IV",                 min:2950, color:"#e0c258"},
-  {name:"Devoto V",                  min:5000, color:"#e8cd6e"},
-  {name:"Devoto Ascendente",         min:5400, color:"#a78bfa"},
-  {name:"Devoto Zeloso",             min:7635, color:"#9166f0"},
-  {name:"Favorecido da Entidade",    min:91100, color:"#f0a070"},
-  {name:"Escolhido do Abismo",       min:18900, color:"#f472b6"},
-  {name:"Presa Lendária",            min:27735, color:"#c81d25"},
-  {name:"Lenda Iridescente",         min:45500, color:"iridescent"}
+  {name:"Presa Ferida",              min:0,    color:"#8d8390"},
+  {name:"Presa Cautelosa",           min:200,  color:"#9a8e88"},
+  {name:"Sobrevivente Resoluto",     min:450,  color:"#a5673a"},
+  {name:"Sobrevivente Implacável",   min:750,  color:"#c07d46"},
+  {name:"Devoto Iniciado",           min:1100, color:"#adb4bb"},
+  {name:"Devoto Constante",         min:1500, color:"#bfc6cc"},
+  {name:"Devoto Fervoroso",         min:1950, color:"#d4af37"},
+  {name:"Devoto Exaltado",          min:2450, color:"#e0c258"},
+  {name:"Arauto da Névoa",          min:3000, color:"#e8cd6e"},
+  {name:"Arauto Ascendente",         min:3600, color:"#a78bfa"},
+  {name:"Zeloso da Entidade",        min:4250, color:"#9166f0"},
+  {name:"Favorecido da Entidade",    min:4950, color:"#f0a070"},
+  {name:"Eleito do Abismo",          min:5700, color:"#f472b6"},
+  {name:"Presa Lendária",            min:6500, color:"#c81d25"},
+  {name:"Lenda Iridescente",         min:7350, color:"iridescent"}
 ];
+const TIER_KEYS = ["tier_0","tier_1","tier_2","tier_3","tier_4","tier_5","tier_6","tier_7","tier_8","tier_9","tier_10","tier_11","tier_12","tier_13","tier_14"];
 
 const ICONS = {
   registrar: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3z"/><path d="M9 12l2 2 4-4"/></svg>',
@@ -310,6 +461,321 @@ const ICONS = {
   devocao: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l2.6 6.6L22 10l-5.4 5 1.6 7-6.2-3.6L5.8 22l1.6-7L2 10l7.4-1.4z"/></svg>',
   moderacao: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3z"/><path d="M9 12l2 2 4-4"/></svg>'
 };
+
+// ============ IDIOMAS (I18N) ============
+const LANGS = [
+  {code:'pt', flag:'🇧🇷', label:'Português'},
+  {code:'en', flag:'🇺🇸', label:'English'},
+  {code:'es', flag:'🇪🇸', label:'Español'},
+  {code:'de', flag:'🇩🇪', label:'Deutsch'},
+  {code:'ja', flag:'🇯🇵', label:'日本語'}
+];
+const I18N = {
+pt:{
+  tagline:'Painel de Devoção & Insígnias', survivor_word:'Sobrevivente', logout:'Sair',
+  role_member:'membro', role_moderator:'moderador', role_admin:'admin',
+  tab_registrar:'Registrar Partida', tab_perfil:'Meu Perfil', tab_ranking:'Ranking', tab_devocao:'Devoção', tab_moderacao:'Moderação',
+  auth_login_title:'Entrar na Névoa', auth_signup_title:'Criar Conta', auth_nick_label:'Seu nick de sobrevivente (só pode escolher uma vez)',
+  auth_email:'Email', auth_password:'Senha', auth_nick_ph:'Ex: DwightF', auth_submit_login:'Entrar', auth_submit_signup:'Criar conta',
+  auth_switch_to_signup:'Criar uma conta', auth_switch_to_login:'Já tenho conta', auth_or:'ou continue com', auth_google:'Google', auth_github:'GitHub',
+  auth_db_error:'O banco de dados (Firebase) não pôde ser iniciado. Confira o FIREBASE_CONFIG no código.',
+  err_need_nick:'Digite um nick.', err_bad_nick:'Nick inválido (2 a 24 caracteres, sem símbolos estranhos).',
+  setup_title:'Escolha seu sobrevivente', setup_desc:'Cada conta pode ter só um nick — depois de criado, ele fica ligado ao seu login pra sempre.',
+  setup_nick_label:'Seu nick de sobrevivente', setup_submit:'Concluir', setup_err_dup:'Não foi possível concluir. Esse nick já existe ou você já registrou um sobrevivente.',
+  reg_title:'Registrar Partida', reg_sub:'anexe o print do placar final', reg_date:'Data da partida', reg_mode:'Modo', reg_role:'Lado',
+  role_survivor_opt:'Sobrevivente', role_killer_opt:'Killer', reg_map:'Mapa', reg_custom:'Partida personalizada (custom / não vale ranking)',
+  reg_proof_label:'Print do placar final (obrigatório)', reg_dropzone:'Clique para escolher o print', reg_notes_label:'Observações (opcional)',
+  reg_notes_ph:'Ex: killer muito forte, quase morri no final...',
+  reg_helper:'Depois de enviar, uma IA lê o print em segundo plano e um moderador também pode revisar manualmente na aba Moderação. Partidas personalizadas e (para sobreviventes) partidas sem fuga confirmada não somam pontos de devoção.',
+  reg_submit:'Enviar Partida', reg_sending:'Enviando...', reg_duel_result:'Resultado do Duelo', result1v1_win:'Vitória', result1v1_loss:'Derrota',
+  reg_emblems_title:'Insígnias da Partida', reg_result_label:'Resultado', result_escaped:'Escapei (portão ou alçapão)', result_died:'Não escapei (morto/sacrificado)',
+  toast_need_proof:'Anexe o print do placar final da partida.', toast_sent:'Partida enviada! Verificando o print em segundo plano...',
+  ai_unreadable:'A IA não conseguiu confirmar os dados no print — aguardando revisão de um moderador.',
+  ai_result_diff:'A IA identificou resultado diferente do informado', ai_review_needed:'— revisão necessária.',
+  ai_confirmed_duel:'IA confirmou o resultado do duelo no print.', ai_confirmed_emblems:'IA confirmou as insígnias do print.',
+  ai_adjusted:'IA ajustou insígnias divergentes do print:', ai_escaped:'escapou', ai_not_escaped:'não escapou',
+  stat_total:'Partidas Registradas', stat_escape_rate:'Taxa de Fuga (Sobrevivente)', stat_avg_pts:'Média de Pontos/Partida', stat_eligible:'Partidas Contadas p/ Devoção',
+  perfil_devotion_title:'Sua Devoção', perfil_calibrating:'Calibrando: faltam {n} partidas válidas para definir sua devoção inicial (como as 10 primeiras de uma competitiva).',
+  devo_pts_label:'pts de devoção', devo_missing:'faltam', devo_pts_to:'pts para', devo_max:'nível máximo alcançado',
+  perfil_history_title:'Histórico de Partidas', th_date:'Data', th_mode:'Modo', th_side:'Lado', th_map:'Mapa', th_result:'Resultado', th_emblems:'Insígnias', th_points:'Pontos', th_status:'Status',
+  no_matches:'Nenhuma partida registrada ainda.', you_tag:'(você)',
+  status_pending:'Analisando', status_review:'Revisar', status_approved:'Confirmada', status_rejected:'Rejeitada',
+  rank_title:'Ranking de Devoção', rank_sub:'ordenado pelos pontos acumulados de insígnias em partidas confirmadas',
+  th_rank:'#', th_survivor:'Sobrevivente', th_tier:'Patente', th_devotion:'Devoção', th_matches:'Partidas', th_escape_rate:'Taxa de Fuga',
+  rank_empty:'Ninguém tem partidas confirmadas ainda. Registre a sua!',
+  devo_title:'Como funciona a Devoção',
+  devo_desc:'Cada partida confirmada gera pontos de acordo com o modo e o lado jogado. No Competitivo e no 2v8, sobreviventes ganham até 4 insígnias (Benevolente, Objetivo, Sobrevivência, Ousadia) e só contam se escaparem; killers ganham 4 insígnias próprias (Devoto, Guardião, Malicioso, Perseguidor) e sempre contam se a partida for confirmada. No 1v1, o que conta é vencer ou perder o duelo. Partidas personalizadas nunca contam para a devoção.',
+  devo_grades_title:'Qualidade das Insígnias', th_emblem:'Insígnia', th_points2:'Pontos',
+  devo_helper:'Assim como uma competitiva de FPS com 10 partidas de colocação, suas primeiras 10 partidas válidas definem sua devoção inicial — depois disso, cada partida nova soma ou reduz pontos conforme o desempenho.',
+  devo_tiers_title:'Patentes de Devoção', th_tier_needed:'Devoção Necessária',
+  mod_title:'Fila de Moderação', mod_sub:'revisão manual — funciona junto com a análise por IA', mod_no_proof:'sem print', mod_obs:'Obs:', mod_ai:'IA:',
+  mod_approve:'Aprovar', mod_reject:'Rejeitar', mod_empty:'Fila de moderação vazia — nada pendente no momento.',
+  mod_admin_title:'Administração de Usuários', th_nick:'Nick', th_role:'Cargo', btn_save:'Salvar', confirm_reject:'Rejeitar esta partida?',
+  toast_role_updated:'Cargo atualizado.', toast_no_perm_approve:'Sem permissão para aprovar.', toast_no_perm_reject:'Sem permissão para rejeitar.', toast_no_perm_role:'Sem permissão para alterar cargos.',
+  result1v1_reported:'Resultado informado:', mod_approved_by:'Aprovada manualmente por {name}.', mod_rejected_by:'Rejeitada manualmente por {name}.',
+  cat_benevolent_label:'Benevolente', cat_benevolent_desc:'Curas, resgates e proteção a outros sobreviventes',
+  cat_objective_label:'Objetivo', cat_objective_desc:'Geradores, totens e abrir os portões',
+  cat_survival_label:'Sobrevivência', cat_survival_desc:'Se manter vivo e escapar da Entidade',
+  cat_boldness_label:'Ousadia', cat_boldness_desc:'Perseguições, escapes por pouco e distrações',
+  cat_devout_label:'Devoto', cat_devout_desc:'Sacrifícios entregues à Entidade',
+  cat_gatekeeper_label:'Guardião', cat_gatekeeper_desc:'Atrasar e impedir geradores',
+  cat_malicious_label:'Malicioso', cat_malicious_desc:'Acertos e derrubadas',
+  cat_chaser_label:'Perseguidor', cat_chaser_desc:'Perseguições e pressão nos loops',
+  grade_nenhum:'Nenhum', grade_bronze:'Bronze', grade_prata:'Prata', grade_ouro:'Ouro', grade_iridescente:'Iridescente',
+  mode_competitivo:'Competitivo (4v1)', mode_2v8:'2v8', mode_1v1:'1v1 (Duelo)',
+  tier_0:'Presa Ferida', tier_1:'Presa Cautelosa', tier_2:'Sobrevivente Resoluto', tier_3:'Sobrevivente Implacável',
+  tier_4:'Devoto Iniciado', tier_5:'Devoto Constante', tier_6:'Devoto Fervoroso', tier_7:'Devoto Exaltado',
+  tier_8:'Arauto da Névoa', tier_9:'Arauto Ascendente', tier_10:'Zeloso da Entidade', tier_11:'Favorecido da Entidade',
+  tier_12:'Eleito do Abismo', tier_13:'Presa Lendária', tier_14:'Lenda Iridescente'
+},
+en:{
+  tagline:'Devotion & Emblem Tracker', survivor_word:'Survivor', logout:'Sign out',
+  role_member:'member', role_moderator:'moderator', role_admin:'admin',
+  tab_registrar:'Log Match', tab_perfil:'My Profile', tab_ranking:'Leaderboard', tab_devocao:'Devotion', tab_moderacao:'Moderation',
+  auth_login_title:'Enter the Fog', auth_signup_title:'Create Account', auth_nick_label:'Your survivor nickname (can only be chosen once)',
+  auth_email:'Email', auth_password:'Password', auth_nick_ph:'e.g. DwightF', auth_submit_login:'Sign in', auth_submit_signup:'Create account',
+  auth_switch_to_signup:'Create an account', auth_switch_to_login:'I already have an account', auth_or:'or continue with', auth_google:'Google', auth_github:'GitHub',
+  auth_db_error:'The database (Firebase) could not be started. Check FIREBASE_CONFIG in the code.',
+  err_need_nick:'Enter a nickname.', err_bad_nick:'Invalid nickname (2 to 24 characters, no odd symbols).',
+  setup_title:'Choose your survivor', setup_desc:'Each account can only have one nickname — once created, it stays linked to your login forever.',
+  setup_nick_label:'Your survivor nickname', setup_submit:'Finish', setup_err_dup:'Could not finish. That nickname already exists or you already registered a survivor.',
+  reg_title:'Log Match', reg_sub:'attach the final scoreboard screenshot', reg_date:'Match date', reg_mode:'Mode', reg_role:'Side',
+  role_survivor_opt:'Survivor', role_killer_opt:'Killer', reg_map:'Map', reg_custom:'Custom match (does not count for ranking)',
+  reg_proof_label:'Final scoreboard screenshot (required)', reg_dropzone:'Click to choose the screenshot', reg_notes_label:'Notes (optional)',
+  reg_notes_ph:'e.g. very strong killer, barely survived...',
+  reg_helper:'After you submit, an AI reads the screenshot in the background and a moderator can also review it manually in the Moderation tab. Custom matches, and (for survivors) matches without a confirmed escape, do not add devotion points.',
+  reg_submit:'Submit Match', reg_sending:'Sending...', reg_duel_result:'Duel Result', result1v1_win:'Win', result1v1_loss:'Loss',
+  reg_emblems_title:'Match Emblems', reg_result_label:'Result', result_escaped:'I escaped (gate or hatch)', result_died:"I didn't escape (died/sacrificed)",
+  toast_need_proof:'Attach the final scoreboard screenshot.', toast_sent:'Match submitted! Verifying the screenshot in the background...',
+  ai_unreadable:'The AI could not confirm the details in the screenshot — awaiting moderator review.',
+  ai_result_diff:'The AI detected a different result than reported', ai_review_needed:'— review needed.',
+  ai_confirmed_duel:'AI confirmed the duel result in the screenshot.', ai_confirmed_emblems:'AI confirmed the emblems in the screenshot.',
+  ai_adjusted:'AI adjusted emblems that differed from the screenshot:', ai_escaped:'escaped', ai_not_escaped:'did not escape',
+  stat_total:'Matches Logged', stat_escape_rate:'Escape Rate (Survivor)', stat_avg_pts:'Avg Points/Match', stat_eligible:'Matches Counted for Devotion',
+  perfil_devotion_title:'Your Devotion', perfil_calibrating:'Calibrating: {n} more valid matches needed to set your initial devotion (like the first 10 placement matches in a competitive mode).',
+  devo_pts_label:'devotion pts', devo_missing:'need', devo_pts_to:'pts to reach', devo_max:'max rank reached',
+  perfil_history_title:'Match History', th_date:'Date', th_mode:'Mode', th_side:'Side', th_map:'Map', th_result:'Result', th_emblems:'Emblems', th_points:'Points', th_status:'Status',
+  no_matches:'No matches logged yet.', you_tag:'(you)',
+  status_pending:'Analyzing', status_review:'Review', status_approved:'Confirmed', status_rejected:'Rejected',
+  rank_title:'Devotion Leaderboard', rank_sub:'ranked by accumulated emblem points from confirmed matches',
+  th_rank:'#', th_survivor:'Survivor', th_tier:'Rank', th_devotion:'Devotion', th_matches:'Matches', th_escape_rate:'Escape Rate',
+  rank_empty:'No one has confirmed matches yet. Log yours!',
+  devo_title:'How Devotion Works',
+  devo_desc:'Every confirmed match generates points based on the mode and side played. In Competitive and 2v8, survivors earn up to 4 emblems (Benevolent, Objective, Survival, Boldness) and they only count if they escape; killers earn 4 of their own emblems (Devout, Gatekeeper, Malicious, Chaser) and always count if the match is confirmed. In 1v1, winning or losing the duel is what counts. Custom matches never count toward devotion.',
+  devo_grades_title:'Emblem Quality', th_emblem:'Emblem', th_points2:'Points',
+  devo_helper:'Just like a 10-match placement in an FPS competitive mode, your first 10 valid matches set your initial devotion — after that, each new match adds or subtracts points based on performance.',
+  devo_tiers_title:'Devotion Ranks', th_tier_needed:'Devotion Required',
+  mod_title:'Moderation Queue', mod_sub:'manual review — works alongside AI analysis', mod_no_proof:'no screenshot', mod_obs:'Note:', mod_ai:'AI:',
+  mod_approve:'Approve', mod_reject:'Reject', mod_empty:'Moderation queue is empty — nothing pending right now.',
+  mod_admin_title:'User Administration', th_nick:'Nickname', th_role:'Role', btn_save:'Save', confirm_reject:'Reject this match?',
+  toast_role_updated:'Role updated.', toast_no_perm_approve:'No permission to approve.', toast_no_perm_reject:'No permission to reject.', toast_no_perm_role:'No permission to change roles.',
+  result1v1_reported:'Reported result:', mod_approved_by:'Manually approved by {name}.', mod_rejected_by:'Manually rejected by {name}.',
+  cat_benevolent_label:'Benevolent', cat_benevolent_desc:'Heals, unhooks and protecting other survivors',
+  cat_objective_label:'Objective', cat_objective_desc:'Generators, totems and opening the gates',
+  cat_survival_label:'Survival', cat_survival_desc:'Staying alive and escaping the Entity',
+  cat_boldness_label:'Boldness', cat_boldness_desc:'Chases, close escapes and distractions',
+  cat_devout_label:'Devout', cat_devout_desc:'Sacrifices delivered to the Entity',
+  cat_gatekeeper_label:'Gatekeeper', cat_gatekeeper_desc:'Slowing down and blocking generators',
+  cat_malicious_label:'Malicious', cat_malicious_desc:'Hits and downs',
+  cat_chaser_label:'Chaser', cat_chaser_desc:'Chases and loop pressure',
+  grade_nenhum:'None', grade_bronze:'Bronze', grade_prata:'Silver', grade_ouro:'Gold', grade_iridescente:'Iridescent',
+  mode_competitivo:'Competitive (4v1)', mode_2v8:'2v8', mode_1v1:'1v1 (Duel)',
+  tier_0:'Wounded Prey', tier_1:'Wary Prey', tier_2:'Resolute Survivor', tier_3:'Relentless Survivor',
+  tier_4:'Initiated Devotee', tier_5:'Steadfast Devotee', tier_6:'Fervent Devotee', tier_7:'Exalted Devotee',
+  tier_8:'Herald of the Fog', tier_9:'Ascendant Herald', tier_10:'Zealot of the Entity', tier_11:'Favored of the Entity',
+  tier_12:'Chosen of the Abyss', tier_13:'Legendary Prey', tier_14:'Iridescent Legend'
+},
+es:{
+  tagline:'Panel de Devoción e Insignias', survivor_word:'Superviviente', logout:'Salir',
+  role_member:'miembro', role_moderator:'moderador', role_admin:'admin',
+  tab_registrar:'Registrar Partida', tab_perfil:'Mi Perfil', tab_ranking:'Clasificación', tab_devocao:'Devoción', tab_moderacao:'Moderación',
+  auth_login_title:'Entrar en la Niebla', auth_signup_title:'Crear Cuenta', auth_nick_label:'Tu apodo de superviviente (solo puedes elegirlo una vez)',
+  auth_email:'Correo', auth_password:'Contraseña', auth_nick_ph:'Ej: DwightF', auth_submit_login:'Entrar', auth_submit_signup:'Crear cuenta',
+  auth_switch_to_signup:'Crear una cuenta', auth_switch_to_login:'Ya tengo cuenta', auth_or:'o continúa con', auth_google:'Google', auth_github:'GitHub',
+  auth_db_error:'No se pudo iniciar la base de datos (Firebase). Revisa el FIREBASE_CONFIG en el código.',
+  err_need_nick:'Escribe un apodo.', err_bad_nick:'Apodo inválido (2 a 24 caracteres, sin símbolos raros).',
+  setup_title:'Elige tu superviviente', setup_desc:'Cada cuenta solo puede tener un apodo — una vez creado, queda ligado a tu cuenta para siempre.',
+  setup_nick_label:'Tu apodo de superviviente', setup_submit:'Finalizar', setup_err_dup:'No se pudo finalizar. Ese apodo ya existe o ya registraste un superviviente.',
+  reg_title:'Registrar Partida', reg_sub:'adjunta la captura del marcador final', reg_date:'Fecha de la partida', reg_mode:'Modo', reg_role:'Lado',
+  role_survivor_opt:'Superviviente', role_killer_opt:'Asesino', reg_map:'Mapa', reg_custom:'Partida personalizada (custom / no cuenta para el ranking)',
+  reg_proof_label:'Captura del marcador final (obligatoria)', reg_dropzone:'Haz clic para elegir la captura', reg_notes_label:'Notas (opcional)',
+  reg_notes_ph:'Ej: asesino muy fuerte, casi no sobrevivo...',
+  reg_helper:'Después de enviar, una IA lee la captura en segundo plano y un moderador también puede revisarla manualmente en la pestaña Moderación. Las partidas personalizadas y (para supervivientes) las partidas sin escape confirmado no suman puntos de devoción.',
+  reg_submit:'Enviar Partida', reg_sending:'Enviando...', reg_duel_result:'Resultado del Duelo', result1v1_win:'Victoria', result1v1_loss:'Derrota',
+  reg_emblems_title:'Insignias de la Partida', reg_result_label:'Resultado', result_escaped:'Escapé (portón o trampilla)', result_died:'No escapé (muerto/sacrificado)',
+  toast_need_proof:'Adjunta la captura del marcador final de la partida.', toast_sent:'¡Partida enviada! Verificando la captura en segundo plano...',
+  ai_unreadable:'La IA no pudo confirmar los datos en la captura — esperando revisión de un moderador.',
+  ai_result_diff:'La IA identificó un resultado diferente al informado', ai_review_needed:'— revisión necesaria.',
+  ai_confirmed_duel:'La IA confirmó el resultado del duelo en la captura.', ai_confirmed_emblems:'La IA confirmó las insignias de la captura.',
+  ai_adjusted:'La IA ajustó insignias distintas a las de la captura:', ai_escaped:'escapó', ai_not_escaped:'no escapó',
+  stat_total:'Partidas Registradas', stat_escape_rate:'Tasa de Escape (Superviviente)', stat_avg_pts:'Puntos Promedio/Partida', stat_eligible:'Partidas Contadas para Devoción',
+  perfil_devotion_title:'Tu Devoción', perfil_calibrating:'Calibrando: faltan {n} partidas válidas para definir tu devoción inicial (como las primeras 10 de una competitiva).',
+  devo_pts_label:'pts de devoción', devo_missing:'faltan', devo_pts_to:'pts para', devo_max:'nivel máximo alcanzado',
+  perfil_history_title:'Historial de Partidas', th_date:'Fecha', th_mode:'Modo', th_side:'Lado', th_map:'Mapa', th_result:'Resultado', th_emblems:'Insignias', th_points:'Puntos', th_status:'Estado',
+  no_matches:'Aún no hay partidas registradas.', you_tag:'(tú)',
+  status_pending:'Analizando', status_review:'Revisar', status_approved:'Confirmada', status_rejected:'Rechazada',
+  rank_title:'Clasificación de Devoción', rank_sub:'ordenado por los puntos de insignias acumulados en partidas confirmadas',
+  th_rank:'#', th_survivor:'Superviviente', th_tier:'Rango', th_devotion:'Devoción', th_matches:'Partidas', th_escape_rate:'Tasa de Escape',
+  rank_empty:'Nadie tiene partidas confirmadas todavía. ¡Registra la tuya!',
+  devo_title:'Cómo Funciona la Devoción',
+  devo_desc:'Cada partida confirmada genera puntos según el modo y el lado jugado. En Competitivo y 2v8, los supervivientes ganan hasta 4 insignias (Benevolente, Objetivo, Supervivencia, Audacia) y solo cuentan si escapan; los asesinos ganan 4 insignias propias (Devoto, Guardián, Malicioso, Perseguidor) y siempre cuentan si la partida se confirma. En 1v1, lo que cuenta es ganar o perder el duelo. Las partidas personalizadas nunca cuentan para la devoción.',
+  devo_grades_title:'Calidad de las Insignias', th_emblem:'Insignia', th_points2:'Puntos',
+  devo_helper:'Igual que una colocación de 10 partidas en un competitivo de FPS, tus primeras 10 partidas válidas definen tu devoción inicial — después, cada partida nueva suma o resta puntos según tu desempeño.',
+  devo_tiers_title:'Rangos de Devoción', th_tier_needed:'Devoción Necesaria',
+  mod_title:'Cola de Moderación', mod_sub:'revisión manual — funciona junto con el análisis por IA', mod_no_proof:'sin captura', mod_obs:'Nota:', mod_ai:'IA:',
+  mod_approve:'Aprobar', mod_reject:'Rechazar', mod_empty:'La cola de moderación está vacía — nada pendiente por ahora.',
+  mod_admin_title:'Administración de Usuarios', th_nick:'Apodo', th_role:'Rol', btn_save:'Guardar', confirm_reject:'¿Rechazar esta partida?',
+  toast_role_updated:'Rol actualizado.', toast_no_perm_approve:'Sin permiso para aprobar.', toast_no_perm_reject:'Sin permiso para rechazar.', toast_no_perm_role:'Sin permiso para cambiar roles.',
+  result1v1_reported:'Resultado informado:', mod_approved_by:'Aprobada manualmente por {name}.', mod_rejected_by:'Rechazada manualmente por {name}.',
+  cat_benevolent_label:'Benevolente', cat_benevolent_desc:'Curas, rescates y proteger a otros supervivientes',
+  cat_objective_label:'Objetivo', cat_objective_desc:'Generadores, tótems y abrir los portones',
+  cat_survival_label:'Supervivencia', cat_survival_desc:'Mantenerse con vida y escapar de la Entidad',
+  cat_boldness_label:'Audacia', cat_boldness_desc:'Persecuciones, escapes por poco y distracciones',
+  cat_devout_label:'Devoto', cat_devout_desc:'Sacrificios entregados a la Entidad',
+  cat_gatekeeper_label:'Guardián', cat_gatekeeper_desc:'Retrasar y bloquear generadores',
+  cat_malicious_label:'Malicioso', cat_malicious_desc:'Golpes y derribos',
+  cat_chaser_label:'Perseguidor', cat_chaser_desc:'Persecuciones y presión en los loops',
+  grade_nenhum:'Ninguna', grade_bronze:'Bronce', grade_prata:'Plata', grade_ouro:'Oro', grade_iridescente:'Iridiscente',
+  mode_competitivo:'Competitivo (4v1)', mode_2v8:'2v8', mode_1v1:'1v1 (Duelo)',
+  tier_0:'Presa Herida', tier_1:'Presa Cautelosa', tier_2:'Superviviente Resuelto', tier_3:'Superviviente Implacable',
+  tier_4:'Devoto Iniciado', tier_5:'Devoto Constante', tier_6:'Devoto Fervoroso', tier_7:'Devoto Exaltado',
+  tier_8:'Heraldo de la Niebla', tier_9:'Heraldo Ascendente', tier_10:'Fanático de la Entidad', tier_11:'Favorecido de la Entidad',
+  tier_12:'Elegido del Abismo', tier_13:'Presa Legendaria', tier_14:'Leyenda Iridiscente'
+},
+de:{
+  tagline:'Hingabe- & Abzeichen-Tracker', survivor_word:'Überlebende(r)', logout:'Abmelden',
+  role_member:'Mitglied', role_moderator:'Moderator', role_admin:'Admin',
+  tab_registrar:'Match Melden', tab_perfil:'Mein Profil', tab_ranking:'Rangliste', tab_devocao:'Hingabe', tab_moderacao:'Moderation',
+  auth_login_title:'Den Nebel Betreten', auth_signup_title:'Konto Erstellen', auth_nick_label:'Dein Überlebenden-Nickname (nur einmal wählbar)',
+  auth_email:'E-Mail', auth_password:'Passwort', auth_nick_ph:'z. B. DwightF', auth_submit_login:'Anmelden', auth_submit_signup:'Konto erstellen',
+  auth_switch_to_signup:'Konto erstellen', auth_switch_to_login:'Ich habe bereits ein Konto', auth_or:'oder weiter mit', auth_google:'Google', auth_github:'GitHub',
+  auth_db_error:'Die Datenbank (Firebase) konnte nicht gestartet werden. Prüfe FIREBASE_CONFIG im Code.',
+  err_need_nick:'Gib einen Nickname ein.', err_bad_nick:'Ungültiger Nickname (2 bis 24 Zeichen, keine seltsamen Symbole).',
+  setup_title:'Wähle deinen Überlebenden', setup_desc:'Jedes Konto kann nur einen Nickname haben — einmal erstellt, bleibt er für immer mit deinem Login verknüpft.',
+  setup_nick_label:'Dein Überlebenden-Nickname', setup_submit:'Fertigstellen', setup_err_dup:'Konnte nicht abgeschlossen werden. Dieser Nickname existiert bereits oder du hast schon einen Überlebenden registriert.',
+  reg_title:'Match Melden', reg_sub:'füge den Screenshot der Endwertung an', reg_date:'Datum des Matches', reg_mode:'Modus', reg_role:'Seite',
+  role_survivor_opt:'Überlebende(r)', role_killer_opt:'Killer', reg_map:'Karte', reg_custom:'Benutzerdefiniertes Match (zählt nicht für die Rangliste)',
+  reg_proof_label:'Screenshot der Endwertung (erforderlich)', reg_dropzone:'Klicken, um den Screenshot auszuwählen', reg_notes_label:'Notizen (optional)',
+  reg_notes_ph:'z. B. sehr starker Killer, knapp überlebt...',
+  reg_helper:'Nach dem Absenden liest eine KI den Screenshot im Hintergrund, und ein Moderator kann ihn im Tab Moderation auch manuell prüfen. Benutzerdefinierte Matches und (bei Überlebenden) Matches ohne bestätigte Flucht zählen keine Hingabepunkte.',
+  reg_submit:'Match Absenden', reg_sending:'Wird gesendet...', reg_duel_result:'Duell-Ergebnis', result1v1_win:'Sieg', result1v1_loss:'Niederlage',
+  reg_emblems_title:'Abzeichen des Matches', reg_result_label:'Ergebnis', result_escaped:'Ich bin entkommen (Tor oder Falltür)', result_died:'Ich bin nicht entkommen (gestorben/geopfert)',
+  toast_need_proof:'Füge den Screenshot der Endwertung des Matches an.', toast_sent:'Match gesendet! Screenshot wird im Hintergrund geprüft...',
+  ai_unreadable:'Die KI konnte die Angaben im Screenshot nicht bestätigen — wartet auf Moderatorprüfung.',
+  ai_result_diff:'Die KI hat ein anderes Ergebnis als angegeben erkannt', ai_review_needed:'— Überprüfung erforderlich.',
+  ai_confirmed_duel:'KI hat das Duell-Ergebnis im Screenshot bestätigt.', ai_confirmed_emblems:'KI hat die Abzeichen im Screenshot bestätigt.',
+  ai_adjusted:'KI hat abweichende Abzeichen laut Screenshot angepasst:', ai_escaped:'entkommen', ai_not_escaped:'nicht entkommen',
+  stat_total:'Erfasste Matches', stat_escape_rate:'Fluchtrate (Überlebende)', stat_avg_pts:'Ø Punkte/Match', stat_eligible:'Für Hingabe Gezählte Matches',
+  perfil_devotion_title:'Deine Hingabe', perfil_calibrating:'Kalibrierung: noch {n} gültige Matches nötig, um deine anfängliche Hingabe festzulegen (wie die ersten 10 Platzierungsspiele in einer Competitive-Liga).',
+  devo_pts_label:'Hingabepunkte', devo_missing:'noch', devo_pts_to:'Pkt. bis', devo_max:'Höchster Rang erreicht',
+  perfil_history_title:'Match-Verlauf', th_date:'Datum', th_mode:'Modus', th_side:'Seite', th_map:'Karte', th_result:'Ergebnis', th_emblems:'Abzeichen', th_points:'Punkte', th_status:'Status',
+  no_matches:'Noch keine Matches erfasst.', you_tag:'(du)',
+  status_pending:'Wird geprüft', status_review:'Prüfung nötig', status_approved:'Bestätigt', status_rejected:'Abgelehnt',
+  rank_title:'Hingabe-Rangliste', rank_sub:'sortiert nach gesammelten Abzeichenpunkten aus bestätigten Matches',
+  th_rank:'#', th_survivor:'Überlebende(r)', th_tier:'Rang', th_devotion:'Hingabe', th_matches:'Matches', th_escape_rate:'Fluchtrate',
+  rank_empty:'Noch niemand hat bestätigte Matches. Melde deins!',
+  devo_title:'So Funktioniert Hingabe',
+  devo_desc:'Jedes bestätigte Match erzeugt Punkte je nach Modus und gespielter Seite. In Competitive und 2v8 erhalten Überlebende bis zu 4 Abzeichen (Wohltätig, Ziel, Überleben, Kühnheit) und diese zählen nur bei Flucht; Killer erhalten 4 eigene Abzeichen (Ergeben, Torwächter, Boshaft, Verfolger) und zählen immer, wenn das Match bestätigt wird. Im 1v1 zählt Sieg oder Niederlage im Duell. Benutzerdefinierte Matches zählen nie für die Hingabe.',
+  devo_grades_title:'Abzeichen-Qualität', th_emblem:'Abzeichen', th_points2:'Punkte',
+  devo_helper:'Wie bei 10 Platzierungsspielen in einem FPS-Competitive-Modus legen deine ersten 10 gültigen Matches deine anfängliche Hingabe fest — danach addiert oder subtrahiert jedes neue Match Punkte je nach Leistung.',
+  devo_tiers_title:'Hingabe-Ränge', th_tier_needed:'Benötigte Hingabe',
+  mod_title:'Moderationswarteschlange', mod_sub:'manuelle Prüfung — funktioniert zusammen mit der KI-Analyse', mod_no_proof:'kein Screenshot', mod_obs:'Notiz:', mod_ai:'KI:',
+  mod_approve:'Genehmigen', mod_reject:'Ablehnen', mod_empty:'Moderationswarteschlange ist leer — derzeit nichts ausstehend.',
+  mod_admin_title:'Benutzerverwaltung', th_nick:'Nickname', th_role:'Rolle', btn_save:'Speichern', confirm_reject:'Dieses Match ablehnen?',
+  toast_role_updated:'Rolle aktualisiert.', toast_no_perm_approve:'Keine Berechtigung zum Genehmigen.', toast_no_perm_reject:'Keine Berechtigung zum Ablehnen.', toast_no_perm_role:'Keine Berechtigung, Rollen zu ändern.',
+  result1v1_reported:'Gemeldetes Ergebnis:', mod_approved_by:'Manuell genehmigt von {name}.', mod_rejected_by:'Manuell abgelehnt von {name}.',
+  cat_benevolent_label:'Wohltätig', cat_benevolent_desc:'Heilen, retten und andere Überlebende schützen',
+  cat_objective_label:'Ziel', cat_objective_desc:'Generatoren, Totems und Tore öffnen',
+  cat_survival_label:'Überleben', cat_survival_desc:'Am Leben bleiben und der Entität entkommen',
+  cat_boldness_label:'Kühnheit', cat_boldness_desc:'Verfolgungsjagden, knappe Fluchten und Ablenkungen',
+  cat_devout_label:'Ergeben', cat_devout_desc:'Der Entität dargebrachte Opfer',
+  cat_gatekeeper_label:'Torwächter', cat_gatekeeper_desc:'Generatoren verlangsamen und blockieren',
+  cat_malicious_label:'Boshaft', cat_malicious_desc:'Treffer und Niederschläge',
+  cat_chaser_label:'Verfolger', cat_chaser_desc:'Verfolgungsjagden und Druck an Loops',
+  grade_nenhum:'Keins', grade_bronze:'Bronze', grade_prata:'Silber', grade_ouro:'Gold', grade_iridescente:'Schillernd',
+  mode_competitivo:'Competitive (4v1)', mode_2v8:'2v8', mode_1v1:'1v1 (Duell)',
+  tier_0:'Verwundete Beute', tier_1:'Wachsame Beute', tier_2:'Entschlossene(r) Überlebende(r)', tier_3:'Unerbittliche(r) Überlebende(r)',
+  tier_4:'Geweihte(r) Novize', tier_5:'Standhafte(r) Geweihte(r)', tier_6:'Inbrünstige(r) Geweihte(r)', tier_7:'Erhabene(r) Geweihte(r)',
+  tier_8:'Herold des Nebels', tier_9:'Aufsteigender Herold', tier_10:'Fanatiker der Entität', tier_11:'Günstling der Entität',
+  tier_12:'Auserwählte(r) des Abgrunds', tier_13:'Legendäre Beute', tier_14:'Schillernde Legende'
+},
+ja:{
+  tagline:'信心度・エンブレム トラッカー', survivor_word:'サバイバー', logout:'ログアウト',
+  role_member:'メンバー', role_moderator:'モデレーター', role_admin:'管理者',
+  tab_registrar:'試合を記録', tab_perfil:'マイプロフィール', tab_ranking:'ランキング', tab_devocao:'信心度', tab_moderacao:'モデレーション',
+  auth_login_title:'霧の中へ入る', auth_signup_title:'アカウント作成', auth_nick_label:'サバイバーのニックネーム（一度しか選べません）',
+  auth_email:'メール', auth_password:'パスワード', auth_nick_ph:'例：DwightF', auth_submit_login:'ログイン', auth_submit_signup:'アカウント作成',
+  auth_switch_to_signup:'アカウントを作成', auth_switch_to_login:'すでにアカウントがあります', auth_or:'または次で続ける', auth_google:'Google', auth_github:'GitHub',
+  auth_db_error:'データベース（Firebase）を開始できませんでした。コード内のFIREBASE_CONFIGを確認してください。',
+  err_need_nick:'ニックネームを入力してください。', err_bad_nick:'無効なニックネームです（2〜24文字、記号不可）。',
+  setup_title:'サバイバーを選択', setup_desc:'各アカウントに設定できるニックネームは1つだけです。作成後はログインに永久に紐づきます。',
+  setup_nick_label:'サバイバーのニックネーム', setup_submit:'完了', setup_err_dup:'完了できませんでした。そのニックネームは既に使われているか、既にサバイバーを登録済みです。',
+  reg_title:'試合を記録', reg_sub:'最終スコア画面のスクリーンショットを添付', reg_date:'試合の日付', reg_mode:'モード', reg_role:'サイド',
+  role_survivor_opt:'サバイバー', role_killer_opt:'キラー', reg_map:'マップ', reg_custom:'カスタムマッチ（ランキングに反映されません）',
+  reg_proof_label:'最終スコア画面のスクリーンショット（必須）', reg_dropzone:'クリックしてスクリーンショットを選択', reg_notes_label:'メモ（任意）',
+  reg_notes_ph:'例：とても強いキラーで、ギリギリ生き残った...',
+  reg_helper:'送信後、AIがバックグラウンドでスクリーンショットを解析します。モデレーションタブでモデレーターが手動確認することもできます。カスタムマッチ、および（サバイバーの場合）脱出が確認できない試合は信心度ポイントに加算されません。',
+  reg_submit:'試合を送信', reg_sending:'送信中...', reg_duel_result:'デュエルの結果', result1v1_win:'勝利', result1v1_loss:'敗北',
+  reg_emblems_title:'試合のエンブレム', reg_result_label:'結果', result_escaped:'脱出した（ゲートまたはハッチ）', result_died:'脱出できなかった（死亡・生贄）',
+  toast_need_proof:'試合の最終スコア画面のスクリーンショットを添付してください。', toast_sent:'試合が送信されました！バックグラウンドでスクリーンショットを確認中...',
+  ai_unreadable:'AIがスクリーンショットの内容を確認できませんでした — モデレーターの確認待ちです。',
+  ai_result_diff:'AIが申告と異なる結果を検出しました', ai_review_needed:'— 確認が必要です。',
+  ai_confirmed_duel:'AIがスクリーンショットのデュエル結果を確認しました。', ai_confirmed_emblems:'AIがスクリーンショットのエンブレムを確認しました。',
+  ai_adjusted:'AIがスクリーンショットと異なるエンブレムを修正しました：', ai_escaped:'脱出した', ai_not_escaped:'脱出しなかった',
+  stat_total:'記録された試合数', stat_escape_rate:'脱出率（サバイバー）', stat_avg_pts:'試合あたり平均ポイント', stat_eligible:'信心度に加算された試合数',
+  perfil_devotion_title:'あなたの信心度', perfil_calibrating:'キャリブレーション中：初期信心度の決定にはあと{n}試合の有効な記録が必要です（競技モードの最初の10戦のように）。',
+  devo_pts_label:'信心度ポイント', devo_missing:'あと', devo_pts_to:'ポイントで', devo_max:'最高ランクに到達済み',
+  perfil_history_title:'試合履歴', th_date:'日付', th_mode:'モード', th_side:'サイド', th_map:'マップ', th_result:'結果', th_emblems:'エンブレム', th_points:'ポイント', th_status:'状態',
+  no_matches:'まだ試合が記録されていません。', you_tag:'（あなた）',
+  status_pending:'解析中', status_review:'要確認', status_approved:'承認済み', status_rejected:'却下',
+  rank_title:'信心度ランキング', rank_sub:'承認済み試合の累計エンブレムポイント順',
+  th_rank:'#', th_survivor:'サバイバー', th_tier:'ランク', th_devotion:'信心度', th_matches:'試合数', th_escape_rate:'脱出率',
+  rank_empty:'まだ承認済みの試合がありません。記録してみましょう！',
+  devo_title:'信心度の仕組み',
+  devo_desc:'承認された試合ごとに、プレイしたモードとサイドに応じてポイントが発生します。競技戦と2v8では、サバイバーは最大4つのエンブレム（献身、目標、生存、大胆）を獲得しますが、脱出した場合のみ加算されます。キラーは専用の4つのエンブレム（信奉、門番、悪意、追跡）を獲得し、試合が承認されれば常に加算されます。1v1ではデュエルの勝敗が重要です。カスタムマッチは信心度に一切加算されません。',
+  devo_grades_title:'エンブレムの品質', th_emblem:'エンブレム', th_points2:'ポイント',
+  devo_helper:'FPS競技戦の10戦の順位決定戦と同様に、最初の10試合の有効な記録で初期信心度が決まります。それ以降は、パフォーマンスに応じて各試合でポイントが増減します。',
+  devo_tiers_title:'信心度ランク', th_tier_needed:'必要な信心度',
+  mod_title:'モデレーションキュー', mod_sub:'手動確認 — AI解析と併用', mod_no_proof:'スクリーンショットなし', mod_obs:'メモ：', mod_ai:'AI：',
+  mod_approve:'承認', mod_reject:'却下', mod_empty:'モデレーションキューは空です — 現在保留中の項目はありません。',
+  mod_admin_title:'ユーザー管理', th_nick:'ニックネーム', th_role:'役割', btn_save:'保存', confirm_reject:'この試合を却下しますか？',
+  toast_role_updated:'役割を更新しました。', toast_no_perm_approve:'承認する権限がありません。', toast_no_perm_reject:'却下する権限がありません。', toast_no_perm_role:'役割を変更する権限がありません。',
+  result1v1_reported:'申告された結果：', mod_approved_by:'{name}が手動で承認しました。', mod_rejected_by:'{name}が手動で却下しました。',
+  cat_benevolent_label:'献身', cat_benevolent_desc:'治療、救助、他のサバイバーの保護',
+  cat_objective_label:'目標', cat_objective_desc:'発電機、トーテム、ゲートを開けること',
+  cat_survival_label:'生存', cat_survival_desc:'生き延びてエンティティから脱出すること',
+  cat_boldness_label:'大胆', cat_boldness_desc:'追跡、ギリギリの脱出、注意を引く行動',
+  cat_devout_label:'信奉', cat_devout_desc:'エンティティに捧げられた生贄',
+  cat_gatekeeper_label:'門番', cat_gatekeeper_desc:'発電機の妨害と遅延',
+  cat_malicious_label:'悪意', cat_malicious_desc:'攻撃とダウン',
+  cat_chaser_label:'追跡', cat_chaser_desc:'追跡とループでのプレッシャー',
+  grade_nenhum:'なし', grade_bronze:'ブロンズ', grade_prata:'シルバー', grade_ouro:'ゴールド', grade_iridescente:'イリデセント',
+  mode_competitivo:'競技戦（4v1）', mode_2v8:'2v8', mode_1v1:'1v1（デュエル）',
+  tier_0:'傷ついた獲物', tier_1:'警戒する獲物', tier_2:'不屈のサバイバー', tier_3:'執念のサバイバー',
+  tier_4:'信心者見習い', tier_5:'揺るがぬ信心者', tier_6:'熱烈な信心者', tier_7:'崇高な信心者',
+  tier_8:'霧の使者', tier_9:'昇りし使者', tier_10:'実体の狂信者', tier_11:'実体の寵愛者',
+  tier_12:'深淵の選ばれし者', tier_13:'伝説の獲物', tier_14:'虹色の伝説'
+}
+};
+let currentLang = (navigator.language || 'pt').slice(0,2).toLowerCase();
+if(!I18N[currentLang]) currentLang = 'pt';
+function t(key, vars){
+  let s = (I18N[currentLang] && I18N[currentLang][key]) || I18N.pt[key] || key;
+  if(vars) Object.keys(vars).forEach(k => { s = s.replace('{'+k+'}', vars[k]); });
+  return s;
+}
+function langSelectorHTML(){
+  return `<select class="lang-select" id="langSelect">${LANGS.map(l => `<option value="${l.code}" ${l.code===currentLang?'selected':''}>${l.flag} ${l.label}</option>`).join('')}</select>`;
+}
+function bindLangSelector(){
+  const sel = document.getElementById('langSelect');
+  if(!sel) return;
+  sel.addEventListener('change', async () => {
+    currentLang = sel.value;
+    if(authUser && userProfile){ try{ await db.collection(COL_USERS).doc(authUser.uid).update({ lang: currentLang }); }catch(e){} }
+    render();
+  });
+}
 
 // ============ ESTADO ============
 let authUser = null;
@@ -455,7 +921,7 @@ async function analyzeProof(dataUrl, mode, role){
         + 'Só retorne "legivel": false se a imagem estiver realmente ilegível ou não for uma tela de fim de partida de Dead by Daylight.';
     } else {
       const cats = categoriesFor(role);
-      const names = cats.map(c => c.label).join(', ');
+      const names = cats.map(c => catLabel(c)).join(', ');
       prompt = 'Você está analisando um print da tela de resultado final de um Trial de Dead by Daylight, do lado do ' + (role === 'killer' ? 'Killer' : 'Sobrevivente') + '. '
         + 'Essa tela mostra até 4 emblemas/insígnias, um para cada categoria: ' + names + '. '
         + 'Cada emblema tem uma qualidade: Nenhum (categoria vazia/sem emblema), Bronze, Prata, Ouro ou Iridescente (a mais alta, geralmente com um brilho/textura colorida diferente das outras). '
@@ -496,18 +962,19 @@ function openLightbox(src){
   box.addEventListener('click', () => box.remove());
   document.body.appendChild(box);
 }
-function emblemBadge(grade){ return `<span class="badge badge-${grade}">${GRADES[grade].label}</span>`; }
+function emblemBadge(grade){ return `<span class="badge badge-${grade}">${gradeLabel(grade)}</span>`; }
 function statusPill(m){
-  if(m.status === 'aprovada') return `<span class="status-pill status-aprovada">Confirmada</span>`;
-  if(m.status === 'revisao') return `<span class="status-pill status-revisao">Revisar</span>`;
-  if(m.status === 'rejeitada') return `<span class="status-pill status-rejeitada">Rejeitada</span>`;
-  return `<span class="status-pill status-pendente">Analisando</span>`;
+  if(m.status === 'aprovada') return `<span class="status-pill status-aprovada">${t('status_approved')}</span>`;
+  if(m.status === 'revisao') return `<span class="status-pill status-revisao">${t('status_review')}</span>`;
+  if(m.status === 'rejeitada') return `<span class="status-pill status-rejeitada">${t('status_rejected')}</span>`;
+  return `<span class="status-pill status-pendente">${t('status_pending')}</span>`;
 }
 function mapOptionsHTML(selected){
   return Object.entries(MAPS_BY_REALM).map(([realm, maps]) =>
     `<optgroup label="${realm}">` + maps.map(m => `<option value="${m}" ${m===selected?'selected':''}>${m}</option>`).join('') + `</optgroup>`
   ).join('');
 }
+function tierName(tier){ return t(TIER_KEYS[tier.index]); }
 function tierProgressHTML(devotion){
   const tier = getTier(devotion);
   const next = TIERS[tier.index+1];
@@ -516,29 +983,26 @@ function tierProgressHTML(devotion){
   const isIrid = tier.color === 'iridescent';
   return `
     <div>
-      <span class="tier-chip" style="${isIrid ? 'background:linear-gradient(120deg,#f0a070,#a78bfa,#f472b6,#f0a070);background-size:300% 100%;animation:iridShift 3s linear infinite;color:#0a080b;' : `background:${tier.color}22;color:${tier.color};border:1px solid ${tier.color}55;`}">${tier.name}</span>
+      <span class="tier-chip" style="${isIrid ? 'background:linear-gradient(120deg,#f0a070,#a78bfa,#f472b6,#f0a070);background-size:300% 100%;animation:iridShift 3s linear infinite;color:#0a080b;' : `background:${tier.color}22;color:${tier.color};border:1px solid ${tier.color}55;`}">${tierName(tier)}</span>
       <div class="progress-track"><div class="progress-fill" style="width:${into}%;"></div></div>
-      <p class="empty-note" style="margin-top:6px;">${devotion} pts de devoção ${next ? '· faltam ' + (next.min - devotion) + ' pts para ' + next.name : '· nível máximo alcançado'}</p>
+      <p class="empty-note" style="margin-top:6px;">${devotion} ${t('devo_pts_label')} ${next ? '· ' + t('devo_missing') + ' ' + (next.min - devotion) + ' ' + t('devo_pts_to') + ' ' + tierName(next) : '· ' + t('devo_max')}</p>
     </div>`;
 }
 function tierChipHTML(tier){
   const isIrid = tier.color === 'iridescent';
-  return `<span class="tier-chip" style="${isIrid ? 'background:linear-gradient(120deg,#f0a070,#a78bfa,#f472b6,#f0a070);background-size:300% 100%;animation:iridShift 3s linear infinite;color:#0a080b;font-size:12px;padding:4px 10px;' : `background:${tier.color}22;color:${tier.color};border:1px solid ${tier.color}55;font-size:12px;padding:4px 10px;`}">${tier.name}</span>`;
+  return `<span class="tier-chip" style="${isIrid ? 'background:linear-gradient(120deg,#f0a070,#a78bfa,#f472b6,#f0a070);background-size:300% 100%;animation:iridShift 3s linear infinite;color:#0a080b;font-size:12px;padding:4px 10px;' : `background:${tier.color}22;color:${tier.color};border:1px solid ${tier.color}55;font-size:12px;padding:4px 10px;`}">${tierName(tier)}</span>`;
 }
+const AUTH_ERR_MAP = {
+  pt:{ 'auth/email-already-in-use':'Esse e-mail já tem uma conta. Tente entrar em vez de criar uma nova.', 'auth/invalid-email':'E-mail inválido.', 'auth/weak-password':'Senha muito curta — use pelo menos 6 caracteres.', 'auth/wrong-password':'Senha incorreta.', 'auth/user-not-found':'Não existe conta com esse e-mail.', 'auth/invalid-credential':'E-mail ou senha incorretos.', 'auth/too-many-requests':'Muitas tentativas seguidas — espere um pouco e tente de novo.', 'auth/popup-closed-by-user':'A janela de login foi fechada antes de terminar.', 'auth/account-exists-with-different-credential':'Já existe uma conta com esse e-mail usando outro método de login.', default:'Não foi possível concluir. Tente novamente.' },
+  en:{ 'auth/email-already-in-use':'That email already has an account. Try signing in instead of creating a new one.', 'auth/invalid-email':'Invalid email.', 'auth/weak-password':'Password too short — use at least 6 characters.', 'auth/wrong-password':'Incorrect password.', 'auth/user-not-found':'No account exists with that email.', 'auth/invalid-credential':'Incorrect email or password.', 'auth/too-many-requests':'Too many attempts — wait a bit and try again.', 'auth/popup-closed-by-user':'The login window was closed before finishing.', 'auth/account-exists-with-different-credential':'An account with that email already exists using another sign-in method.', default:'Could not complete. Try again.' },
+  es:{ 'auth/email-already-in-use':'Ese correo ya tiene una cuenta. Intenta entrar en vez de crear una nueva.', 'auth/invalid-email':'Correo inválido.', 'auth/weak-password':'Contraseña muy corta — usa al menos 6 caracteres.', 'auth/wrong-password':'Contraseña incorrecta.', 'auth/user-not-found':'No existe una cuenta con ese correo.', 'auth/invalid-credential':'Correo o contraseña incorrectos.', 'auth/too-many-requests':'Demasiados intentos seguidos — espera un poco e intenta de nuevo.', 'auth/popup-closed-by-user':'La ventana de inicio de sesión se cerró antes de terminar.', 'auth/account-exists-with-different-credential':'Ya existe una cuenta con ese correo usando otro método de inicio de sesión.', default:'No se pudo completar. Inténtalo de nuevo.' },
+  de:{ 'auth/email-already-in-use':'Für diese E-Mail existiert bereits ein Konto. Versuche dich anzumelden statt ein neues zu erstellen.', 'auth/invalid-email':'Ungültige E-Mail.', 'auth/weak-password':'Passwort zu kurz — mindestens 6 Zeichen verwenden.', 'auth/wrong-password':'Falsches Passwort.', 'auth/user-not-found':'Es existiert kein Konto mit dieser E-Mail.', 'auth/invalid-credential':'E-Mail oder Passwort falsch.', 'auth/too-many-requests':'Zu viele Versuche — warte kurz und versuche es erneut.', 'auth/popup-closed-by-user':'Das Login-Fenster wurde vor Abschluss geschlossen.', 'auth/account-exists-with-different-credential':'Es existiert bereits ein Konto mit dieser E-Mail über eine andere Anmeldemethode.', default:'Konnte nicht abgeschlossen werden. Versuche es erneut.' },
+  ja:{ 'auth/email-already-in-use':'このメールアドレスは既に登録されています。新規作成ではなくログインをお試しください。', 'auth/invalid-email':'無効なメールアドレスです。', 'auth/weak-password':'パスワードが短すぎます — 6文字以上にしてください。', 'auth/wrong-password':'パスワードが正しくありません。', 'auth/user-not-found':'このメールアドレスのアカウントは存在しません。', 'auth/invalid-credential':'メールアドレスまたはパスワードが正しくありません。', 'auth/too-many-requests':'試行回数が多すぎます — しばらく待ってから再試行してください。', 'auth/popup-closed-by-user':'ログインウィンドウが完了前に閉じられました。', 'auth/account-exists-with-different-credential':'このメールアドレスは別のログイン方法で既に登録されています。', default:'完了できませんでした。もう一度お試しください。' }
+};
 function traduzErroAuth(e){
   const code = e && e.code || '';
-  const map = {
-    'auth/email-already-in-use': 'Esse e-mail já tem uma conta. Tente entrar em vez de criar uma nova.',
-    'auth/invalid-email': 'E-mail inválido.',
-    'auth/weak-password': 'Senha muito curta — use pelo menos 6 caracteres.',
-    'auth/wrong-password': 'Senha incorreta.',
-    'auth/user-not-found': 'Não existe conta com esse e-mail.',
-    'auth/invalid-credential': 'E-mail ou senha incorretos.',
-    'auth/too-many-requests': 'Muitas tentativas seguidas — espere um pouco e tente de novo.',
-    'auth/popup-closed-by-user': 'A janela de login foi fechada antes de terminar.',
-    'auth/account-exists-with-different-credential': 'Já existe uma conta com esse e-mail usando outro método de login.'
-  };
-  return map[code] || 'Não foi possível concluir. Tente novamente.';
+  const map = AUTH_ERR_MAP[currentLang] || AUTH_ERR_MAP.pt;
+  return map[code] || map.default;
 }
 
 // ============ AUTENTICAÇÃO ============
@@ -552,28 +1016,30 @@ async function socialSignIn(providerName){
 function renderAuthGate(){
   const app = document.getElementById('app');
   app.innerHTML = `
-    <div class="header" style="justify-content:center;">
-      <div class="brand"><div class="brand-mark"></div><div><h1>BRDBD</h1><p>Painel de Devoção &amp; Insígnias</p></div></div>
+    <div class="header" style="justify-content:center;position:relative;">
+      <div class="brand"><div class="brand-mark"></div><div><h1>BRDBD</h1><p>${t('tagline')}</p></div></div>
+      <div style="position:absolute; right:18px; top:18px;">${langSelectorHTML()}</div>
     </div>
     <div class="panel" style="max-width:440px;margin:0 auto;">
-      <h2>${authView === 'login' ? 'Entrar na Névoa' : 'Criar Conta'}</h2>
-      ${authView === 'signup' ? `<div class="field"><label>Seu nick de sobrevivente (só pode escolher uma vez)</label><input type="text" id="auth_nick" placeholder="Ex: DwightF"></div>` : ''}
-      <div class="field"><label>Email</label><input type="email" id="auth_email"></div>
-      <div class="field"><label>Senha</label><input type="password" id="auth_pass"></div>
+      <h2>${authView === 'login' ? t('auth_login_title') : t('auth_signup_title')}</h2>
+      ${authView === 'signup' ? `<div class="field"><label>${t('auth_nick_label')}</label><input type="text" id="auth_nick" placeholder="${t('auth_nick_ph')}"></div>` : ''}
+      <div class="field"><label>${t('auth_email')}</label><input type="email" id="auth_email"></div>
+      <div class="field"><label>${t('auth_password')}</label><input type="password" id="auth_pass"></div>
       ${authError ? `<div class="helper-note err">${authError}</div>` : ''}
       <div style="margin-top:16px; display:flex; gap:10px; flex-wrap:wrap;">
-        <button id="authSubmitBtn" type="button">${authView === 'login' ? 'Entrar' : 'Criar conta'}</button>
-        <button class="secondary" id="authSwitchBtn" type="button">${authView === 'login' ? 'Criar uma conta' : 'Já tenho conta'}</button>
+        <button id="authSubmitBtn" type="button">${authView === 'login' ? t('auth_submit_login') : t('auth_submit_signup')}</button>
+        <button class="secondary" id="authSwitchBtn" type="button">${authView === 'login' ? t('auth_switch_to_signup') : t('auth_switch_to_login')}</button>
       </div>
       <div style="margin-top:18px; padding-top:16px; border-top:1px solid var(--line);">
-        <p class="empty-note" style="margin-bottom:10px;">ou continue com</p>
+        <p class="empty-note" style="margin-bottom:10px;">${t('auth_or')}</p>
         <div style="display:flex; gap:8px; flex-wrap:wrap;">
-          <button class="secondary" id="googleBtn" type="button">Google</button>
-          <button class="secondary" id="githubBtn" type="button">GitHub</button>
+          <button class="secondary" id="googleBtn" type="button">${t('auth_google')}</button>
+          <button class="secondary" id="githubBtn" type="button">${t('auth_github')}</button>
         </div>
       </div>
-      ${!db ? '<div class="helper-note err" style="margin-top:16px;">O banco de dados (Firebase) não pôde ser iniciado. Confira o FIREBASE_CONFIG no código.</div>' : ''}
+      ${!db ? `<div class="helper-note err" style="margin-top:16px;">${t('auth_db_error')}</div>` : ''}
     </div>`;
+  bindLangSelector();
   document.getElementById('authSwitchBtn').addEventListener('click', () => { authView = authView === 'login' ? 'signup' : 'login'; authError=''; renderAuthGate(); });
   document.getElementById('googleBtn').addEventListener('click', () => socialSignIn('google'));
   document.getElementById('githubBtn').addEventListener('click', () => socialSignIn('github'));
@@ -585,14 +1051,14 @@ function renderAuthGate(){
     try{
       if(authView === 'signup'){
         const nick = document.getElementById('auth_nick').value.trim();
-        if(!nick){ authError='Digite um nick.'; btn.disabled=false; renderAuthGate(); return; }
+        if(!nick){ authError=t('err_need_nick'); btn.disabled=false; renderAuthGate(); return; }
         if(nick.length < 2 || nick.length > 24 || !/^[\p{L}\p{N}_.\- ]+$/u.test(nick)){
-          authError='Nick inválido (2 a 24 caracteres, sem símbolos estranhos).'; btn.disabled=false; renderAuthGate(); return;
+          authError=t('err_bad_nick'); btn.disabled=false; renderAuthGate(); return;
         }
         // Códigos de mod/admin foram removidos: a regra de segurança força role='member' na criação.
         // Promoção a moderator/admin é feita por um admin já existente (aba Moderação) ou pelo Firebase Console.
         const cred = await firebase.auth().createUserWithEmailAndPassword(email, pass);
-        await createMyProfile({ uid: cred.user.uid, playerName: nick, role: 'member', createdAt: Date.now() });
+        await createMyProfile({ uid: cred.user.uid, playerName: nick, role: 'member', createdAt: Date.now(), lang: currentLang });
       } else {
         await firebase.auth().signInWithEmailAndPassword(email, pass);
       }
@@ -603,29 +1069,31 @@ function renderAuthGate(){
 function renderProfileSetupGate(){
   const app = document.getElementById('app');
   app.innerHTML = `
-    <div class="header" style="justify-content:center;">
-      <div class="brand"><div class="brand-mark"></div><div><h1>BRDBD</h1><p>Painel de Devoção &amp; Insígnias</p></div></div>
+    <div class="header" style="justify-content:center;position:relative;">
+      <div class="brand"><div class="brand-mark"></div><div><h1>BRDBD</h1><p>${t('tagline')}</p></div></div>
+      <div style="position:absolute; right:18px; top:18px;">${langSelectorHTML()}</div>
     </div>
     <div class="panel" style="max-width:440px;margin:0 auto;">
-      <h2>Escolha seu sobrevivente</h2>
-      <p class="empty-note">Cada conta pode ter só um nick — depois de criado, ele fica ligado ao seu login pra sempre.</p>
-      <div class="field"><label>Seu nick de sobrevivente</label><input type="text" id="setup_nick" placeholder="Ex: DwightF"></div>
+      <h2>${t('setup_title')}</h2>
+      <p class="empty-note">${t('setup_desc')}</p>
+      <div class="field"><label>${t('setup_nick_label')}</label><input type="text" id="setup_nick" placeholder="${t('auth_nick_ph')}"></div>
       ${authError ? `<div class="helper-note err">${authError}</div>` : ''}
-      <button id="setupSubmitBtn" type="button" style="margin-top:14px;">Concluir</button>
+      <button id="setupSubmitBtn" type="button" style="margin-top:14px;">${t('setup_submit')}</button>
     </div>`;
+  bindLangSelector();
   document.getElementById('setupSubmitBtn').addEventListener('click', async () => {
     const nick = document.getElementById('setup_nick').value.trim();
-    if(!nick){ authError='Digite um nick.'; renderProfileSetupGate(); return; }
+    if(!nick){ authError=t('err_need_nick'); renderProfileSetupGate(); return; }
     if(nick.length < 2 || nick.length > 24 || !/^[\p{L}\p{N}_.\- ]+$/u.test(nick)){
-      authError='Nick inválido (2 a 24 caracteres, sem símbolos estranhos).'; renderProfileSetupGate(); return;
+      authError=t('err_bad_nick'); renderProfileSetupGate(); return;
     }
     try{
-      userProfile = { uid: authUser.uid, playerName: nick, role: 'member', createdAt: Date.now() };
+      userProfile = { uid: authUser.uid, playerName: nick, role: 'member', createdAt: Date.now(), lang: currentLang };
       await createMyProfile(userProfile);
       render();
     }catch(e){
       console.error(e);
-      authError = 'Não foi possível concluir. Esse nick já existe ou você já registrou um sobrevivente.';
+      authError = t('setup_err_dup');
       renderProfileSetupGate();
     }
   });
@@ -638,59 +1106,60 @@ function visibleTabs(){
   if(userProfile.role === 'moderator' || userProfile.role === 'admin') tabs.push('moderacao');
   return tabs;
 }
+const TAB_LABEL_KEYS = {registrar:'tab_registrar', perfil:'tab_perfil', ranking:'tab_ranking', devocao:'tab_devocao', moderacao:'tab_moderacao'};
 function renderShell(innerHTML){
   const app = document.getElementById('app');
   const pendingCount = matches.filter(m => m.status === 'pendente' || m.status === 'revisao').length;
+  const tabsHTML = (extraClass) => visibleTabs().map(tb => `
+        <button class="tab-btn ${extraClass||''} ${activeTab===tb?'active':''}" data-tab="${tb}" type="button">
+          ${ICONS[tb]}
+          <span>${t(TAB_LABEL_KEYS[tb])}</span>
+          ${tb==='moderacao' && pendingCount>0 ? `<span class="pill">${pendingCount}</span>` : ''}
+        </button>`).join('');
   app.innerHTML = `
     <div class="header">
-      <div class="brand"><div class="brand-mark"></div><div><h1>BRDBD</h1><p>Painel de Devoção &amp; Insígnias</p></div></div>
+      <div class="brand"><div class="brand-mark"></div><div><h1>BRDBD</h1><p>${t('tagline')}</p></div></div>
       <div class="header-controls">
-        <span class="who">Sobrevivente: <b>${userProfile.playerName}</b>${userProfile.role !== 'member' ? `<span class="role-tag">${userProfile.role}</span>` : ''}</span>
-        <button class="secondary small" id="logoutBtn" type="button">Sair</button>
+        ${langSelectorHTML()}
+        <span class="who">${t('survivor_word')}: <b>${userProfile.playerName}</b>${userProfile.role !== 'member' ? `<span class="role-tag">${t('role_' + userProfile.role)}</span>` : ''}</span>
+        <button class="secondary small" id="logoutBtn" type="button">${t('logout')}</button>
       </div>
     </div>
-    <div class="tabs">
-      ${visibleTabs().map(t => `
-        <button class="tab-btn ${activeTab===t?'active':''}" data-tab="${t}" type="button">
-          ${ICONS[t]}
-          ${{registrar:'Registrar Partida', perfil:'Meu Perfil', ranking:'Ranking', devocao:'Devoção', moderacao:'Moderação'}[t]}
-          ${t==='moderacao' && pendingCount>0 ? `<span class="pill">${pendingCount}</span>` : ''}
-        </button>`).join('')}
-    </div>
+    <div class="tabs">${tabsHTML()}</div>
     <div id="tabContent">${innerHTML}</div>
+    <nav class="bottom-nav">${tabsHTML()}</nav>
   `;
   document.querySelectorAll('.tab-btn').forEach(b => b.addEventListener('click', () => { activeTab = b.dataset.tab; render(); }));
   document.getElementById('logoutBtn').addEventListener('click', () => firebase.auth().signOut());
+  bindLangSelector();
 }
 
 // ============ RENDER: REGISTRAR ============
 function renderRegistrar(){
   renderShell(`
     <div class="panel">
-      <h2>Registrar Partida <span class="sub">anexe o print do placar final</span></h2>
+      <h2>${t('reg_title')} <span class="sub">${t('reg_sub')}</span></h2>
       <form id="matchForm">
         <div class="grid" style="margin-bottom:16px;">
-          <div class="field"><label>Data da partida</label><input type="date" id="f_date" required value="${new Date().toISOString().slice(0,10)}"></div>
-          <div class="field"><label>Modo</label><select id="f_mode">${MODE_KEYS.map(k => `<option value="${k}">${MODES[k].label}</option>`).join('')}</select></div>
-          <div class="field"><label>Lado</label><select id="f_role"><option value="sobrevivente">Sobrevivente</option><option value="killer">Killer</option></select></div>
-          <div class="field"><label>Mapa</label><select id="f_map">${mapOptionsHTML(ALL_MAPS[0])}</select></div>
+          <div class="field"><label>${t('reg_date')}</label><input type="date" id="f_date" required value="${new Date().toISOString().slice(0,10)}"></div>
+          <div class="field"><label>${t('reg_mode')}</label><select id="f_mode">${MODE_KEYS.map(k => `<option value="${k}">${modeLabel(k)}</option>`).join('')}</select></div>
+          <div class="field"><label>${t('reg_role')}</label><select id="f_role"><option value="sobrevivente">${t('role_survivor_opt')}</option><option value="killer">${t('role_killer_opt')}</option></select></div>
+          <div class="field"><label>${t('reg_map')}</label><select id="f_map">${mapOptionsHTML(ALL_MAPS[0])}</select></div>
         </div>
         <div class="field checkbox" style="margin-bottom:16px;">
           <input type="checkbox" id="f_custom">
-          <label for="f_custom" style="text-transform:none;letter-spacing:0;font-size:13px;">Partida personalizada (custom / não vale ranking)</label>
+          <label for="f_custom" style="text-transform:none;letter-spacing:0;font-size:13px;">${t('reg_custom')}</label>
         </div>
         <div id="dynamicFields"></div>
         <div class="field" style="margin:16px 0;">
-          <label>Print do placar final (obrigatório)</label>
-          <div class="file-drop" id="dropZone">Clique para escolher o print</div>
+          <label>${t('reg_proof_label')}</label>
+          <div class="file-drop" id="dropZone">${t('reg_dropzone')}</div>
           <input type="file" id="f_proof" accept="image/*" style="display:none;">
           <img id="previewImg" class="preview-thumb" style="display:none;">
         </div>
-        <div class="field" style="margin-bottom:6px;"><label>Observações (opcional)</label><textarea id="f_notes" rows="2" placeholder="Ex: killer muito forte, quase morri no final..."></textarea></div>
-        <div class="helper-note">
-          Depois de enviar, uma IA lê o print em segundo plano e um moderador também pode revisar manualmente na aba Moderação. Partidas personalizadas e (para sobreviventes) partidas sem fuga confirmada não somam pontos de devoção.
-        </div>
-        <button type="submit" style="margin-top:16px;" id="submitBtn">Enviar Partida</button>
+        <div class="field" style="margin-bottom:6px;"><label>${t('reg_notes_label')}</label><textarea id="f_notes" rows="2" placeholder="${t('reg_notes_ph')}"></textarea></div>
+        <div class="helper-note">${t('reg_helper')}</div>
+        <button type="submit" style="margin-top:16px;" id="submitBtn">${t('reg_submit')}</button>
       </form>
     </div>
   `);
@@ -702,25 +1171,25 @@ function renderRegistrar(){
     if(mode === '1v1'){
       box.innerHTML = `
         <div class="field" style="max-width:260px;">
-          <label>Resultado do Duelo</label>
-          <select id="f_result1v1"><option value="vitoria">Vitória</option><option value="derrota">Derrota</option></select>
+          <label>${t('reg_duel_result')}</label>
+          <select id="f_result1v1"><option value="vitoria">${t('result1v1_win')}</option><option value="derrota">${t('result1v1_loss')}</option></select>
         </div>`;
       return;
     }
     const cats = categoriesFor(role);
     const emblemFields = cats.map(c => `
       <div class="emblem-card">
-        <label>${c.label}</label>
-        <div class="desc">${c.desc}</div>
-        <select id="emb_${c.key}">${GRADE_KEYS.map(g => `<option value="${g}">${GRADES[g].label}</option>`).join('')}</select>
+        <label>${catLabel(c)}</label>
+        <div class="desc">${catDesc(c)}</div>
+        <select id="emb_${c.key}">${GRADE_KEYS.map(g => `<option value="${g}">${gradeLabel(g)}</option>`).join('')}</select>
       </div>`).join('');
     box.innerHTML = `
-      <h2 style="font-size:15px;margin:16px 0 12px;">Insígnias da Partida</h2>
+      <h2 style="font-size:15px;margin:16px 0 12px;">${t('reg_emblems_title')}</h2>
       <div class="emblem-row" style="margin-bottom:8px;">${emblemFields}</div>
       ${role !== 'killer' ? `
         <div class="field" style="max-width:260px;margin-top:12px;">
-          <label>Resultado</label>
-          <select id="f_result"><option value="escapou">Escapei (portão ou alçapão)</option><option value="morreu">Não escapei (morto/sacrificado)</option></select>
+          <label>${t('reg_result_label')}</label>
+          <select id="f_result"><option value="escapou">${t('result_escaped')}</option><option value="morreu">${t('result_died')}</option></select>
         </div>` : ''}
     `;
   }
@@ -740,9 +1209,9 @@ function renderRegistrar(){
     e.preventDefault();
     if(submitting) return;
     const file = document.getElementById('f_proof').files[0];
-    if(!file){ showToast('Anexe o print do placar final da partida.'); return; }
+    if(!file){ showToast(t('toast_need_proof')); return; }
     submitting = true;
-    const btn = document.getElementById('submitBtn'); btn.disabled = true; btn.textContent = 'Enviando...';
+    const btn = document.getElementById('submitBtn'); btn.disabled = true; btn.textContent = t('reg_sending');
 
     const mode = document.getElementById('f_mode').value;
     const role = document.getElementById('f_role').value;
@@ -771,7 +1240,7 @@ function renderRegistrar(){
     }
 
     await createMatch(match);
-    showToast('Partida enviada! Verificando o print em segundo plano...');
+    showToast(t('toast_sent'));
     activeTab = 'perfil'; submitting = false;
     render();
 
@@ -787,14 +1256,14 @@ function renderRegistrar(){
 
     if(!ai || ai.legivel === false){
       patch.status = 'revisao';
-      patch.aiNote = 'A IA não conseguiu confirmar os dados no print — aguardando revisão de um moderador.' + (ai && ai.observacao ? ' (' + ai.observacao + ')' : '');
+      patch.aiNote = t('ai_unreadable') + (ai && ai.observacao ? ' (' + ai.observacao + ')' : '');
     } else if(mode === '1v1'){
       if(ai.resultado && ai.resultado !== m.result1v1){
         patch.status = 'revisao';
-        patch.aiNote = 'A IA identificou resultado diferente do informado (' + ai.resultado + ') — revisão necessária.';
+        patch.aiNote = t('ai_result_diff') + ' (' + ai.resultado + ') ' + t('ai_review_needed');
       } else {
         patch.status = 'aprovada';
-        patch.aiNote = 'IA confirmou o resultado do duelo no print.';
+        patch.aiNote = t('ai_confirmed_duel');
         await deleteProof(m.id);
       }
     } else {
@@ -802,15 +1271,15 @@ function renderRegistrar(){
       const diffs = [];
       cats.forEach(c => {
         const aiVal = ai[c.key];
-        if(aiVal && GRADES[aiVal] && aiVal !== m.emblems[c.key]) diffs.push({field:c.label, from:GRADES[m.emblems[c.key]].label, to:GRADES[aiVal].label, key:c.key, val:aiVal});
+        if(aiVal && GRADES[aiVal] && aiVal !== m.emblems[c.key]) diffs.push({field:catLabel(c), from:gradeLabel(m.emblems[c.key]), to:gradeLabel(aiVal), key:c.key, val:aiVal});
       });
       let escapeWarning = '';
       if(role !== 'killer' && ai.escapou !== null && ai.escapou !== undefined && ai.escapou !== m.escaped){
-        escapeWarning = 'A IA identificou resultado diferente do informado (' + (ai.escapou ? 'escapou' : 'não escapou') + ') — revisão necessária.';
+        escapeWarning = t('ai_result_diff') + ' (' + (ai.escapou ? t('ai_escaped') : t('ai_not_escaped')) + ') ' + t('ai_review_needed');
       }
       if(diffs.length === 0 && !escapeWarning){
         patch.status = 'aprovada';
-        patch.aiNote = 'IA confirmou as insígnias do print.';
+        patch.aiNote = t('ai_confirmed_emblems');
         await deleteProof(m.id);
       } else if(escapeWarning){
         patch.status = 'revisao';
@@ -821,7 +1290,7 @@ function renderRegistrar(){
         patch.emblems = newEmblems;
         patch.correctedByAI = true;
         patch.status = 'aprovada';
-        patch.aiNote = 'IA ajustou insígnias divergentes do print: ' + diffs.map(d => d.field + ' ' + d.from + ' → ' + d.to).join(', ');
+        patch.aiNote = t('ai_adjusted') + ' ' + diffs.map(d => d.field + ' ' + d.from + ' → ' + d.to).join(', ');
       }
     }
     try{ await patchMatch(m.id, patch); }catch(e){ console.error(e); }
@@ -836,42 +1305,42 @@ function renderPerfil(){
   const myMatches = matches.filter(m => m.uid === authUser.uid).sort((a,b) => b.createdAt - a.createdAt);
 
   const rows = myMatches.length ? myMatches.map(m => {
-    const modeLabel = MODES[m.mode].label + (m.custom ? ' <span class="custom-tag">custom</span>' : '');
-    const roleLabel = m.mode === '1v1' ? '—' : (m.role === 'killer' ? 'Killer' : 'Sobrevivente');
+    const modeLbl = modeLabel(m.mode) + (m.custom ? ' <span class="custom-tag">custom</span>' : '');
+    const roleLbl = m.mode === '1v1' ? '—' : (m.role === 'killer' ? t('role_killer_opt') : t('role_survivor_opt'));
     let resultCell;
-    if(m.mode === '1v1') resultCell = m.result1v1 === 'vitoria' ? '<span style="color:#7fd9a8;">Vitória</span>' : '<span style="color:#e07a80;">Derrota</span>';
+    if(m.mode === '1v1') resultCell = m.result1v1 === 'vitoria' ? `<span style="color:#7fd9a8;">${t('result1v1_win')}</span>` : `<span style="color:#e07a80;">${t('result1v1_loss')}</span>`;
     else if(m.role === 'killer') resultCell = '—';
-    else resultCell = m.escaped ? '<span style="color:#7fd9a8;">Escapou</span>' : '<span style="color:#e07a80;">Morreu</span>';
+    else resultCell = m.escaped ? `<span style="color:#7fd9a8;">${t('ai_escaped')}</span>` : `<span style="color:#e07a80;">${t('ai_not_escaped')}</span>`;
     const emblemsCell = m.mode === '1v1' ? '—' : categoriesFor(m.role).map(c => emblemBadge(m.emblems[c.key])).join(' ');
     const pts = countsForDevotion(m) ? matchPoints(m) : '—';
     return `<tr>
-      <td>${m.date}</td>
-      <td>${modeLabel}</td>
-      <td>${roleLabel}</td>
-      <td>${m.map}</td>
-      <td>${resultCell}</td>
-      <td>${emblemsCell}</td>
-      <td class="mono">${pts}</td>
-      <td>${statusPill(m)}</td>
+      <td data-label="${t('th_date')}">${m.date}</td>
+      <td data-label="${t('th_mode')}">${modeLbl}</td>
+      <td data-label="${t('th_side')}">${roleLbl}</td>
+      <td data-label="${t('th_map')}">${m.map}</td>
+      <td data-label="${t('th_result')}">${resultCell}</td>
+      <td data-label="${t('th_emblems')}">${emblemsCell}</td>
+      <td class="mono" data-label="${t('th_points')}">${pts}</td>
+      <td data-label="${t('th_status')}">${statusPill(m)}</td>
     </tr>
-    ${m.aiNote ? `<tr><td colspan="8" style="padding-top:0;color:var(--muted);font-size:12px;">↳ ${m.aiNote}</td></tr>` : ''}`;
-  }).join('') : `<tr><td colspan="8" class="empty-note">Nenhuma partida registrada ainda.</td></tr>`;
+    ${m.aiNote ? `<tr><td colspan="8" data-label="" style="padding-top:0;color:var(--muted);font-size:12px;">↳ ${m.aiNote}</td></tr>` : ''}`;
+  }).join('') : `<tr><td colspan="8" data-label="" class="empty-note">${t('no_matches')}</td></tr>`;
 
   renderShell(`
     <div class="hero-stats">
-      <div class="hero-card"><div class="val">${stats.total}</div><div class="lbl">Partidas Registradas</div></div>
-      <div class="hero-card"><div class="val">${stats.escapeRate.toFixed(0)}%</div><div class="lbl">Taxa de Fuga (Sobrevivente)</div></div>
-      <div class="hero-card"><div class="val">${stats.avgPts.toFixed(0)}</div><div class="lbl">Média de Pontos/Partida</div></div>
-      <div class="hero-card"><div class="val">${stats.eligibleCount}</div><div class="lbl">Partidas Contadas p/ Devoção</div></div>
+      <div class="hero-card"><div class="val">${stats.total}</div><div class="lbl">${t('stat_total')}</div></div>
+      <div class="hero-card"><div class="val">${stats.escapeRate.toFixed(0)}%</div><div class="lbl">${t('stat_escape_rate')}</div></div>
+      <div class="hero-card"><div class="val">${stats.avgPts.toFixed(0)}</div><div class="lbl">${t('stat_avg_pts')}</div></div>
+      <div class="hero-card"><div class="val">${stats.eligibleCount}</div><div class="lbl">${t('stat_eligible')}</div></div>
     </div>
     <div class="panel">
-      <h2>Sua Devoção</h2>
-      ${stats.calibrating ? `<p class="empty-note">Calibrando: faltam ${10 - stats.eligibleCount} partidas válidas para definir sua devoção inicial (como as 10 primeiras de uma competitiva).</p>` : tierProgressHTML(stats.devotion)}
+      <h2>${t('perfil_devotion_title')}</h2>
+      ${stats.calibrating ? `<p class="empty-note">${t('perfil_calibrating', {n: 10 - stats.eligibleCount})}</p>` : tierProgressHTML(stats.devotion)}
     </div>
     <div class="panel">
-      <h2>Histórico de Partidas</h2>
-      <table>
-        <thead><tr><th>Data</th><th>Modo</th><th>Lado</th><th>Mapa</th><th>Resultado</th><th>Insígnias</th><th>Pontos</th><th>Status</th></tr></thead>
+      <h2>${t('perfil_history_title')}</h2>
+      <table class="responsive">
+        <thead><tr><th>${t('th_date')}</th><th>${t('th_mode')}</th><th>${t('th_side')}</th><th>${t('th_map')}</th><th>${t('th_result')}</th><th>${t('th_emblems')}</th><th>${t('th_points')}</th><th>${t('th_status')}</th></tr></thead>
         <tbody>${rows}</tbody>
       </table>
     </div>
@@ -885,20 +1354,20 @@ function renderRanking(){
     const tier = getTier(s.devotion);
     const rankClass = i===0?'rank-1':i===1?'rank-2':i===2?'rank-3':'';
     return `<tr>
-      <td class="${rankClass}">#${i+1}</td>
-      <td>${s.name}${s.uid===authUser.uid?' <span style="color:var(--muted);font-size:11px;">(você)</span>':''}</td>
-      <td>${tierChipHTML(tier)}</td>
-      <td class="mono">${s.devotion}</td>
-      <td>${s.total}</td>
-      <td>${s.escapeRate.toFixed(0)}%</td>
+      <td class="${rankClass}" data-label="${t('th_rank')}">#${i+1}</td>
+      <td data-label="${t('th_survivor')}">${s.name}${s.uid===authUser.uid?` <span style="color:var(--muted);font-size:11px;">${t('you_tag')}</span>`:''}</td>
+      <td data-label="${t('th_tier')}">${tierChipHTML(tier)}</td>
+      <td class="mono" data-label="${t('th_devotion')}">${s.devotion}</td>
+      <td data-label="${t('th_matches')}">${s.total}</td>
+      <td data-label="${t('th_escape_rate')}">${s.escapeRate.toFixed(0)}%</td>
     </tr>`;
-  }).join('') : `<tr><td colspan="6" class="empty-note">Ninguém tem partidas confirmadas ainda. Registre a sua!</td></tr>`;
+  }).join('') : `<tr><td colspan="6" data-label="" class="empty-note">${t('rank_empty')}</td></tr>`;
 
   renderShell(`
     <div class="panel">
-      <h2>Ranking de Devoção <span class="sub">ordenado pelos pontos acumulados de insígnias em partidas confirmadas</span></h2>
-      <table>
-        <thead><tr><th>#</th><th>Sobrevivente</th><th>Patente</th><th>Devoção</th><th>Partidas</th><th>Taxa de Fuga</th></tr></thead>
+      <h2>${t('rank_title')} <span class="sub">${t('rank_sub')}</span></h2>
+      <table class="responsive">
+        <thead><tr><th>${t('th_rank')}</th><th>${t('th_survivor')}</th><th>${t('th_tier')}</th><th>${t('th_devotion')}</th><th>${t('th_matches')}</th><th>${t('th_escape_rate')}</th></tr></thead>
         <tbody>${rows}</tbody>
       </table>
     </div>
@@ -907,70 +1376,70 @@ function renderRanking(){
 
 // ============ RENDER: DEVOÇÃO (INFO) ============
 function renderDevocaoInfo(){
-  const gradeRows = GRADE_KEYS.map(g => `<tr><td>${emblemBadge(g)}</td><td class="mono">${GRADES[g].pts} pts</td></tr>`).join('');
-  const tierRows = TIERS.map(t => `<tr><td>${tierChipHTML(t)}</td><td class="mono">${t.min}+ pts</td></tr>`).join('');
+  const gradeRows = GRADE_KEYS.map(g => `<tr><td data-label="${t('th_emblem')}">${emblemBadge(g)}</td><td class="mono" data-label="${t('th_points2')}">${GRADES[g].pts} pts</td></tr>`).join('');
+  const tierRows = TIERS.map((tr, i) => `<tr><td data-label="${t('devo_tiers_title')}">${tierChipHTML({...tr, index:i})}</td><td class="mono" data-label="${t('th_tier_needed')}">${tr.min}+ pts</td></tr>`).join('');
   renderShell(`
     <div class="panel">
-      <h2>Como funciona a Devoção</h2>
-      <p class="empty-note">Cada partida confirmada gera pontos de acordo com o modo e o lado jogado. No Competitivo e no 2v8, sobreviventes ganham até 4 insígnias (Benevolente, Objetivo, Sobrevivência, Ousadia) e só contam se escaparem; killers ganham 4 insígnias próprias (Devoto, Guardião, Malicioso, Perseguidor) e sempre contam se a partida for confirmada. No 1v1, o que conta é vencer ou perder o duelo. Partidas personalizadas nunca contam para a devoção.</p>
+      <h2>${t('devo_title')}</h2>
+      <p class="empty-note">${t('devo_desc')}</p>
       <div class="grid" style="margin-top:16px;">
-        <div><h2 style="font-size:14px;margin-bottom:10px;">Qualidade das Insígnias</h2>
-          <table><thead><tr><th>Insígnia</th><th>Pontos</th></tr></thead><tbody>${gradeRows}</tbody></table>
+        <div><h2 style="font-size:14px;margin-bottom:10px;">${t('devo_grades_title')}</h2>
+          <table class="responsive"><thead><tr><th>${t('th_emblem')}</th><th>${t('th_points2')}</th></tr></thead><tbody>${gradeRows}</tbody></table>
         </div>
       </div>
-      <div class="helper-note">Assim como uma competitiva de FPS com 10 partidas de colocação, suas primeiras 10 partidas válidas definem sua devoção inicial — depois disso, cada partida nova soma ou reduz pontos conforme o desempenho.</div>
+      <div class="helper-note">${t('devo_helper')}</div>
     </div>
     <div class="panel">
-      <h2>Patentes de Devoção</h2>
-      <table><thead><tr><th>Patente</th><th>Devoção Necessária</th></tr></thead><tbody>${tierRows}</tbody></table>
+      <h2>${t('devo_tiers_title')}</h2>
+      <table class="responsive"><thead><tr><th>${t('devo_tiers_title')}</th><th>${t('th_tier_needed')}</th></tr></thead><tbody>${tierRows}</tbody></table>
     </div>
   `);
 }
 
 // ============ RENDER: MODERAÇÃO ============
 async function renderModeracao(){
-  renderShell(`<div class="panel"><p class="empty-note">Carregando fila de moderação...</p></div>`);
+  renderShell(`<div class="panel"><p class="empty-note">...</p></div>`);
   const queue = matches.filter(m => m.status === 'pendente' || m.status === 'revisao').sort((a,b) => a.createdAt - b.createdAt);
   const isAdmin = userProfile.role === 'admin';
 
   const cardsHTML = queue.length ? await Promise.all(queue.map(async (m) => {
     let proofSrc = await getProof(m.id);
-    const modeLabel = MODES[m.mode].label + (m.custom ? ' <span class="custom-tag">custom</span>' : '');
-    const roleLabel = m.mode === '1v1' ? '' : (m.role === 'killer' ? ' · Killer' : ' · Sobrevivente');
+    const modeLbl = modeLabel(m.mode) + (m.custom ? ' <span class="custom-tag">custom</span>' : '');
+    const roleLbl = m.mode === '1v1' ? '' : (m.role === 'killer' ? ' · ' + t('role_killer_opt') : ' · ' + t('role_survivor_opt'));
     let detail;
-    if(m.mode === '1v1') detail = 'Resultado informado: ' + (m.result1v1 === 'vitoria' ? 'Vitória' : 'Derrota');
-    else detail = categoriesFor(m.role).map(c => c.label + ': ' + GRADES[m.emblems[c.key]].label).join(' · ') + (m.role !== 'killer' ? (' · ' + (m.escaped ? 'Escapou' : 'Morreu')) : '');
+    if(m.mode === '1v1') detail = t('result1v1_reported') + ' ' + (m.result1v1 === 'vitoria' ? t('result1v1_win') : t('result1v1_loss'));
+    else detail = categoriesFor(m.role).map(c => catLabel(c) + ': ' + gradeLabel(m.emblems[c.key])).join(' · ') + (m.role !== 'killer' ? (' · ' + (m.escaped ? t('ai_escaped') : t('ai_not_escaped'))) : '');
     return `
       <div class="mod-card" data-id="${m.id}">
-        ${proofSrc ? `<img class="mod-proof" src="${proofSrc}" data-view="${m.id}">` : `<div class="mod-proof" style="display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:11px;">sem print</div>`}
+        ${proofSrc ? `<img class="mod-proof" src="${proofSrc}" data-view="${m.id}">` : `<div class="mod-proof" style="display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:11px;">${t('mod_no_proof')}</div>`}
         <div class="mod-body">
-          <div><b>${m.player}</b><span style="color:var(--muted);font-size:12px;"> · ${m.date} · ${m.map}${roleLabel} · ${modeLabel}</span></div>
+          <div><b>${m.player}</b><span style="color:var(--muted);font-size:12px;"> · ${m.date} · ${m.map}${roleLbl} · ${modeLbl}</span></div>
           <div style="font-size:12.5px;margin-top:4px;">${detail}</div>
-          ${m.notes ? `<div style="font-size:12px;color:var(--muted);margin-top:4px;">Obs: ${m.notes}</div>` : ''}
-          ${m.aiNote ? `<div class="mod-ai">IA: ${m.aiNote}</div>` : ''}
+          ${m.notes ? `<div style="font-size:12px;color:var(--muted);margin-top:4px;">${t('mod_obs')} ${m.notes}</div>` : ''}
+          ${m.aiNote ? `<div class="mod-ai">${t('mod_ai')} ${m.aiNote}</div>` : ''}
           ${statusPill(m)}
         </div>
         <div class="mod-actions">
-          <button class="ok small" data-approve="${m.id}" type="button">Aprovar</button>
-          <button class="danger small" data-reject="${m.id}" type="button">Rejeitar</button>
+          <button class="ok small" data-approve="${m.id}" type="button">${t('mod_approve')}</button>
+          <button class="danger small" data-reject="${m.id}" type="button">${t('mod_reject')}</button>
         </div>
       </div>`;
-  })) : ['<p class="empty-note">Fila de moderação vazia — nada pendente no momento.</p>'];
+  })) : [`<p class="empty-note">${t('mod_empty')}</p>`];
 
   let usersTableHTML = '';
   if(isAdmin){
     usersTableHTML = `
       <div class="panel">
-        <h2>Administração de Usuários</h2>
-        <table>
-          <thead><tr><th>Nick</th><th>Cargo</th><th></th></tr></thead>
+        <h2>${t('mod_admin_title')}</h2>
+        <table class="responsive">
+          <thead><tr><th>${t('th_nick')}</th><th>${t('th_role')}</th><th></th></tr></thead>
           <tbody>${users.map(u => `
             <tr>
-              <td>${u.playerName}${u.uid===authUser.uid?' (você)':''}</td>
-              <td><select data-role-select="${u.uid}" ${u.uid===authUser.uid?'disabled':''}>
-                ${['member','moderator','admin'].map(r => `<option value="${r}" ${r===u.role?'selected':''}>${r}</option>`).join('')}
+              <td data-label="${t('th_nick')}">${u.playerName}${u.uid===authUser.uid?' '+t('you_tag'):''}</td>
+              <td data-label="${t('th_role')}"><select data-role-select="${u.uid}" ${u.uid===authUser.uid?'disabled':''}>
+                ${['member','moderator','admin'].map(r => `<option value="${r}" ${r===u.role?'selected':''}>${t('role_'+r)}</option>`).join('')}
               </select></td>
-              <td>${u.uid===authUser.uid?'':'<button class="secondary small" data-save-role="'+u.uid+'" type="button">Salvar</button>'}</td>
+              <td data-label="">${u.uid===authUser.uid?'':'<button class="secondary small" data-save-role="'+u.uid+'" type="button">'+t('btn_save')+'</button>'}</td>
             </tr>`).join('')}
           </tbody>
         </table>
@@ -979,7 +1448,7 @@ async function renderModeracao(){
 
   renderShell(`
     <div class="panel">
-      <h2>Fila de Moderação <span class="sub">revisão manual — funciona junto com a análise por IA</span></h2>
+      <h2>${t('mod_title')} <span class="sub">${t('mod_sub')}</span></h2>
       ${cardsHTML.join('')}
     </div>
     ${usersTableHTML}
@@ -990,23 +1459,23 @@ async function renderModeracao(){
     const id = btn.dataset.approve;
     const m = await fetchMatchOnce(id);
     if(!m) return;
-    const aiNote = (m.aiNote ? m.aiNote + ' ' : '') + 'Aprovada manualmente por ' + userProfile.playerName + '.';
+    const aiNote = (m.aiNote ? m.aiNote + ' ' : '') + t('mod_approved_by', {name: userProfile.playerName});
     try{
       await patchMatch(id, { status: 'aprovada', aiNote });
       await deleteProof(id);
-    }catch(e){ console.error(e); showToast('Sem permissão para aprovar.'); return; }
+    }catch(e){ console.error(e); showToast(t('toast_no_perm_approve')); return; }
     renderModeracao();
   }));
   document.querySelectorAll('[data-reject]').forEach(btn => btn.addEventListener('click', async () => {
-    if(!confirm('Rejeitar esta partida?')) return;
+    if(!confirm(t('confirm_reject'))) return;
     const id = btn.dataset.reject;
     const m = await fetchMatchOnce(id);
     if(!m) return;
-    const aiNote = (m.aiNote ? m.aiNote + ' ' : '') + 'Rejeitada manualmente por ' + userProfile.playerName + '.';
+    const aiNote = (m.aiNote ? m.aiNote + ' ' : '') + t('mod_rejected_by', {name: userProfile.playerName});
     try{
       await patchMatch(id, { status: 'rejeitada', aiNote });
       await deleteProof(id);
-    }catch(e){ console.error(e); showToast('Sem permissão para rejeitar.'); return; }
+    }catch(e){ console.error(e); showToast(t('toast_no_perm_reject')); return; }
     renderModeracao();
   }));
   document.querySelectorAll('[data-save-role]').forEach(btn => btn.addEventListener('click', async () => {
@@ -1014,8 +1483,8 @@ async function renderModeracao(){
     const sel = document.querySelector(`[data-role-select="${uid}"]`);
     try{
       await patchUserRole(uid, sel.value);
-      showToast('Cargo atualizado.');
-    }catch(e){ console.error(e); showToast('Sem permissão para alterar cargos.'); }
+      showToast(t('toast_role_updated'));
+    }catch(e){ console.error(e); showToast(t('toast_no_perm_role')); }
     renderModeracao();
   }));
 
